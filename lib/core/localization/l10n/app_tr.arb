@@ -1,0 +1,9 @@
+{
+  "@@locale": "tr",
+
+  "appTitle": "TrackIt",
+  "market": "Piyasa",
+  "portfolio": "Portföy",
+  "settings": "Ayarlar",
+  "hello": "Merhaba, {userName}!"
+}

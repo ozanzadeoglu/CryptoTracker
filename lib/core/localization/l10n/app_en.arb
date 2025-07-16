@@ -1,0 +1,23 @@
+{
+  "@@locale": "en",
+
+  "appTitle": "TrackIt",
+  "@appTitle": {
+    "description": "Title of the app"
+  },
+
+  "market": "Market",
+  "portfolio": "Portfolio",
+  "settings": "Settings",
+
+  "hello": "Hello, {userName}!",
+  "@hello": {
+    "description": "Test greeting",
+    "placeholders": {
+      "userName": {
+        "type": "String",
+        "example": "John Doe"
+      }
+    }
+  }
+}
