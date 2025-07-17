@@ -1,6 +1,8 @@
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
+import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
+import 'package:crypto_tracker/core/services/logging/logger_service.dart.dart';
 import 'package:crypto_tracker/features/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,9 +16,18 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
-        
-        // Dio client, low level dependency
-        Provider<ApiClient>(create: (_) => ApiClient.instance),
+
+        //Low level dependencies
+        Provider<ILoggerService>(
+          create: (_) => ConsoleLoggerService.instance,
+          dispose: (_, service) => service.dispose(),
+        ),
+
+
+        ProxyProvider<ILoggerService, ApiClient>(
+          update: (_, logger, __) =>
+              ApiClient(logger),
+        ),
       ],
       child: const CryptoTrackerState(),
     ),

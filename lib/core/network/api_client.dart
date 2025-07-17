@@ -1,17 +1,19 @@
-import 'package:crypto_tracker/core/config/api_keys.dart';
-import 'package:crypto_tracker/core/network/api_failure.dart';
-import 'package:crypto_tracker/core/network/api_result.dart';
-import 'package:dio/dio.dart';
+import "package:crypto_tracker/core/config/api_keys.dart";
+import "package:crypto_tracker/core/network/api_failure.dart";
+import "package:crypto_tracker/core/network/api_result.dart";
+import "package:crypto_tracker/core/services/logging/logger_service.dart.dart";
+import "package:dio/dio.dart";
 
 class ApiClient {
   final Dio _dio;
+  final ILoggerService _logger;
 
   static const _baseUrl = "https://api.coingecko.com/api/v3/";
-  static const _headerApiKey = 'x-cg-demo-api-key';
-  static const _headerContentType = 'Content-Type';
-  static const _contentTypeJson = 'application/json';
+  static const _headerApiKey = "x-cg-demo-api-key";
+  static const _headerContentType = "Content-Type";
+  static const _contentTypeJson = "application/json";
 
-  ApiClient._internal()
+  ApiClient(this._logger)
     : _dio = Dio(
         BaseOptions(
           baseUrl: _baseUrl,
@@ -24,11 +26,9 @@ class ApiClient {
         ),
       );
 
-  static final ApiClient instance = ApiClient._internal();
-
   /// Generic GET method to handle all GET requests.
   /// It returns an [ApiResult<T>] which is either an [ApiResult.success] or an [ApiResult.failure].
-  /// 
+  ///
   /// [path]: The endpoint path.
   /// [fromJson]: A function that converts the raw JSON map to an object of type T.
   ///             This keeps the ApiService decoupled from specific data models.
@@ -36,18 +36,32 @@ class ApiClient {
     required String path,
     required T Function(dynamic json) fromJson,
   }) async {
+    _logger.logInfo("Requesting GET path: $path", source: "ApiClient");
     try {
       final response = await _dio.get(path);
       return ApiResult.success(fromJson(response.data));
     } on DioException catch (e) {
       return ApiResult.failure(_handleDioException(e));
-    } catch (e) {
-      return ApiResult.failure(ApiFailure.unknown("An unexpected error occurred..."));
+    } catch (e, stackTrace) {
+      _logger.logError(
+        "A critical error occurred in ApiClient.get",
+        error: e,
+        stackTrace: stackTrace,
+        source: "ApiClient",
+      );
+      return ApiResult.failure(
+        ApiFailure.unknown("An unexpected error occurred..."),
+      );
     }
   }
 
-   /// Converts a [DioException] into a structured, typed [ApiFailure].
+  /// Converts a [DioException] into a structured, typed [ApiFailure].
   ApiFailure _handleDioException(DioException e) {
+    _logger.logWarning(
+      "DioException caught",
+      error: e,
+      source: "ApiClient",
+    );
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
@@ -64,7 +78,7 @@ class ApiClient {
         String serverMessage = "An unexpected server error occurred.";
 
         if (e.response?.data is Map<String, dynamic>) {
-          serverMessage = e.response!.data['error'] ?? serverMessage;
+          serverMessage = e.response!.data["error"] ?? serverMessage;
         }
 
         if (statusCode == 404) {
