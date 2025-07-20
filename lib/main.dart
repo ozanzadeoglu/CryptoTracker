@@ -1,3 +1,5 @@
+import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
+import 'package:crypto_tracker/core/connectivity/impl/connectivity_service_impl.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
@@ -11,6 +13,12 @@ import 'package:provider/provider.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // --- CONNECTIVITY INITIALIZATION ---
+  // Create a single instance of our service.
+  final connectivityService = ConnectivityServiceImpl();
+  // Perform the initial connectivity check before the app even runs.
+  await connectivityService.initialize();
+
   await dotenv.load(fileName: ".env");
   runApp(
     MultiProvider(
@@ -22,11 +30,14 @@ void main() async {
           create: (_) => ConsoleLoggerService.instance,
           dispose: (_, service) => service.dispose(),
         ),
-
-
+        Provider<IConnectivityService>(
+          create: (_) => connectivityService,
+          dispose: (_, service) => service.dispose(),
+        ),
+        
+        
         ProxyProvider<ILoggerService, ApiClient>(
-          update: (_, logger, __) =>
-              ApiClient(logger),
+          update: (_, logger, __) => ApiClient(logger),
         ),
       ],
       child: const CryptoTrackerState(),
