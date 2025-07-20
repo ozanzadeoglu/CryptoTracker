@@ -15,7 +15,10 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$MarketChartData {
 
-@ChartDataPointConverter() List<ChartDataPoint> get prices;@JsonKey(name: 'market_caps')@ChartDataPointConverter() List<ChartDataPoint> get marketCaps;@JsonKey(name: 'total_volumes')@ChartDataPointConverter() List<ChartDataPoint> get totalVolumes;
+/// A list of price data points over the selected time interval.
+@ChartDataPointConverter() List<ChartDataPoint> get prices;/// A list of market cap data points over the selected time interval.
+@JsonKey(name: 'market_caps')@ChartDataPointConverter() List<ChartDataPoint> get marketCaps;/// A list of total volume data points over the selected time interval.
+@JsonKey(name: 'total_volumes')@ChartDataPointConverter() List<ChartDataPoint> get totalVolumes;
 /// Create a copy of MarketChartData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -214,21 +217,27 @@ class _MarketChartData implements MarketChartData {
   const _MarketChartData({@ChartDataPointConverter() required final  List<ChartDataPoint> prices, @JsonKey(name: 'market_caps')@ChartDataPointConverter() required final  List<ChartDataPoint> marketCaps, @JsonKey(name: 'total_volumes')@ChartDataPointConverter() required final  List<ChartDataPoint> totalVolumes}): _prices = prices,_marketCaps = marketCaps,_totalVolumes = totalVolumes;
   factory _MarketChartData.fromJson(Map<String, dynamic> json) => _$MarketChartDataFromJson(json);
 
+/// A list of price data points over the selected time interval.
  final  List<ChartDataPoint> _prices;
+/// A list of price data points over the selected time interval.
 @override@ChartDataPointConverter() List<ChartDataPoint> get prices {
   if (_prices is EqualUnmodifiableListView) return _prices;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_prices);
 }
 
+/// A list of market cap data points over the selected time interval.
  final  List<ChartDataPoint> _marketCaps;
+/// A list of market cap data points over the selected time interval.
 @override@JsonKey(name: 'market_caps')@ChartDataPointConverter() List<ChartDataPoint> get marketCaps {
   if (_marketCaps is EqualUnmodifiableListView) return _marketCaps;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_marketCaps);
 }
 
+/// A list of total volume data points over the selected time interval.
  final  List<ChartDataPoint> _totalVolumes;
+/// A list of total volume data points over the selected time interval.
 @override@JsonKey(name: 'total_volumes')@ChartDataPointConverter() List<ChartDataPoint> get totalVolumes {
   if (_totalVolumes is EqualUnmodifiableListView) return _totalVolumes;
   // ignore: implicit_dynamic_type
@@ -302,7 +311,9 @@ as List<ChartDataPoint>,
 /// @nodoc
 mixin _$ChartDataPoint {
 
- DateTime get date; double get value;
+/// The specific date and time for this data point.
+ DateTime get date;/// The value at this point in time (can be price, volume, or market cap).
+ double get value;
 /// Create a copy of ChartDataPoint
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -500,7 +511,9 @@ class _ChartDataPoint implements ChartDataPoint {
   const _ChartDataPoint({required this.date, required this.value});
   factory _ChartDataPoint.fromJson(Map<String, dynamic> json) => _$ChartDataPointFromJson(json);
 
+/// The specific date and time for this data point.
 @override final  DateTime date;
+/// The value at this point in time (can be price, volume, or market cap).
 @override final  double value;
 
 /// Create a copy of ChartDataPoint
