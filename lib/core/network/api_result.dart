@@ -1,4 +1,8 @@
 import 'package:crypto_tracker/core/network/api_failure.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'api_result.freezed.dart';
+
 
 /// Utility class to wrap result data from an API call.
 ///
@@ -15,34 +19,11 @@ import 'package:crypto_tracker/core/network/api_failure.dart';
 ///   }
 /// }
 /// ```
-sealed class ApiResult<T> {
-  const ApiResult();
+@freezed
+sealed class ApiResult<S> with _$ApiResult<S> {
+  /// Represents a successful result containing a [value].
+  const factory ApiResult.success(S value) = Success<S>;
 
-  /// Creates a successful [ApiResult], completed with the specified [value].
-  const factory ApiResult.success(T value) = Success._;
-
-  /// Creates an error [ApiResult], completed with the specified [failure] object.
-  const factory ApiResult.failure(ApiFailure failure) = Failure._;
-}
-
-/// Subclass of [ApiResult] for success values.
-final class Success<T> extends ApiResult<T> {
-  const Success._(this.value);
-
-  /// Returned value in result.
-  final T value;
-
-  @override
-  String toString() => 'ApiResult<$T>.success($value)';
-}
-
-/// Subclass of [ApiResult] for error values.
-final class Failure<T> extends ApiResult<T> {
-  const Failure._(this.failure);
-
-  /// Returned [ApiFailure] object in result.
-  final ApiFailure failure;
-
-  @override
-  String toString() => 'ApiResult<$T>.failure($failure)';
+  /// Represents a failure result containing an [ApiFailure].
+  const factory ApiResult.failure(ApiFailure failure) = Failure<S>;
 }
