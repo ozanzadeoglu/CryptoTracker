@@ -3,7 +3,7 @@ import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
 import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart.dart';
-import 'package:crypto_tracker/features/home/home_screen.dart';
+import 'package:crypto_tracker/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';

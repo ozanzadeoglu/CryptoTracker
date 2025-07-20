@@ -43,13 +43,23 @@ dependencies:
   
   cupertino_icons: ^1.0.8
   flutter_dotenv: ^5.2.1
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.9.0
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+
 
 dev_dependencies:
+  freezed: ^3.1.0
+  build_runner: ^2.5.4
+  json_serializable: ^6.9.5
+  hive_generator_plus: ^4.0.2
+  
+  flutter_lints: ^5.0.0
+
   flutter_test:
     sdk: flutter
 
-
-  flutter_lints: ^5.0.0
 
 
 flutter:
