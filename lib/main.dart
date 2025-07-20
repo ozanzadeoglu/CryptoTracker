@@ -6,6 +6,7 @@ import 'package:crypto_tracker/core/connectivity/impl/connectivity_service_impl.
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
+import 'package:crypto_tracker/core/router/app_router.dart';
 import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
@@ -14,10 +15,9 @@ import 'package:crypto_tracker/features/settings/data/datasources/i_settings_loc
 import 'package:crypto_tracker/features/settings/data/datasources/settings_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
-import 'package:crypto_tracker/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -30,7 +30,7 @@ void main() async {
   await connectivityService.initialize();
 
   await dotenv.load(fileName: ".env");
-
+  await Hive.initFlutter();
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
 
   runApp(
@@ -76,7 +76,8 @@ class CryptoTrackerState extends StatelessWidget {
     final localeProvider = context.watch<LocaleProvider>();
     final themeProvider = context.watch<ThemeProvider>();
 
-    return MaterialApp(
+    return MaterialApp.router(
+      routerConfig: AppRouter.router,
       locale: localeProvider.locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
@@ -84,7 +85,7 @@ class CryptoTrackerState extends StatelessWidget {
       themeMode: themeProvider.themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const HomeScreen(),
+      title: "TrackIt",
     );
   }
 }
