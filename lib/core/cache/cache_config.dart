@@ -2,6 +2,7 @@
 abstract final class CacheBoxNames {
   /// The box for storing user-specific settings.
   static const String settings = 'settingsBox';
+  static const String apiCache = "apiCacheBox";
 }
 
 /// Contains the keys for all values stored in the Hive boxes.
