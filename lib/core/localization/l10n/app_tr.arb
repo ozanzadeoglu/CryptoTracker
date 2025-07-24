@@ -5,5 +5,11 @@
   "market": "Piyasa",
   "portfolio": "Portföy",
   "settings": "Ayarlar",
-  "hello": "Merhaba, {userName}!"
+  "hello": "Merhaba, {userName}!",
+  "errorMessage" : "Bir Hata Oluştu", 
+  "tryAgain" : "Tekrar Dene",
+  "sortOptionsGainers": "Yükseliş",
+  "sortOptionsLosers": "Düşüş",
+  "sortOptionsMarketCap": "Piyasa Değeri",
+  "sortOptionsAlphabetic": "Alfabetik (A-Z)"
 }

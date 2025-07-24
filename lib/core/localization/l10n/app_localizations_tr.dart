@@ -21,6 +21,24 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settings => 'Ayarlar';
 
   @override
+  String get errorMessage => 'Bir Hata Oluştu';
+
+  @override
+  String get tryAgain => 'Tekrar Dene';
+
+  @override
+  String get sortOptionsGainers => 'Yükseliş';
+
+  @override
+  String get sortOptionsLosers => 'Düşüş';
+
+  @override
+  String get sortOptionsMarketCap => 'Piyasa Değeri';
+
+  @override
+  String get sortOptionsAlphabetic => 'Alfabetik (A-Z)';
+
+  @override
   String hello(String userName) {
     return 'Merhaba, $userName!';
   }

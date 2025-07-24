@@ -9,6 +9,12 @@
   "market": "Market",
   "portfolio": "Portfolio",
   "settings": "Settings",
+  "errorMessage" : "An Error Occurred", 
+  "tryAgain" : "Try Again",
+  "sortOptionsGainers": "Gainers",
+  "sortOptionsLosers": "Losers",
+  "sortOptionsMarketCap": "Market Cap",
+  "sortOptionsAlphabetic": "Name (A-Z)",
 
   "hello": "Hello, {userName}!",
   "@hello": {

@@ -122,6 +122,42 @@ abstract class AppLocalizations {
   /// **'Settings'**
   String get settings;
 
+  /// No description provided for @errorMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'An Error Occurred'**
+  String get errorMessage;
+
+  /// No description provided for @tryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Try Again'**
+  String get tryAgain;
+
+  /// No description provided for @sortOptionsGainers.
+  ///
+  /// In en, this message translates to:
+  /// **'Gainers'**
+  String get sortOptionsGainers;
+
+  /// No description provided for @sortOptionsLosers.
+  ///
+  /// In en, this message translates to:
+  /// **'Losers'**
+  String get sortOptionsLosers;
+
+  /// No description provided for @sortOptionsMarketCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Market Cap'**
+  String get sortOptionsMarketCap;
+
+  /// No description provided for @sortOptionsAlphabetic.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (A-Z)'**
+  String get sortOptionsAlphabetic;
+
   /// Test greeting
   ///
   /// In en, this message translates to:

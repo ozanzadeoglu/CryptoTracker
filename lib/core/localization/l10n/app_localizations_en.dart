@@ -21,6 +21,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
+  String get errorMessage => 'An Error Occurred';
+
+  @override
+  String get tryAgain => 'Try Again';
+
+  @override
+  String get sortOptionsGainers => 'Gainers';
+
+  @override
+  String get sortOptionsLosers => 'Losers';
+
+  @override
+  String get sortOptionsMarketCap => 'Market Cap';
+
+  @override
+  String get sortOptionsAlphabetic => 'Name (A-Z)';
+
+  @override
   String hello(String userName) {
     return 'Hello, $userName!';
   }
