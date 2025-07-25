@@ -28,8 +28,11 @@ abstract class Coin with _$Coin {
     @HiveField(4) @JsonKey(name: 'current_price') required double currentPrice,
     
     /// The total market capitalization in the user's selected fiat currency.
-    @HiveField(5) @JsonKey(name: 'market_cap') required int marketCap,
-    
+    @HiveField(5) @JsonKey(name: 'market_cap') required int? marketCap,
+
+    // The rank of coin on market cap.
+    @HiveField(8) @JsonKey(name: 'market_cap_rank') required int marketCapRank,
+
     /// The percentage change in price over the last 24 hours.
     @HiveField(6) @JsonKey(name: 'price_change_percentage_24h') required double priceChangePercentage24h,
     

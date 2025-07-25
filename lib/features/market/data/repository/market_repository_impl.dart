@@ -26,17 +26,31 @@ class MarketRepositoryImpl
        _localDataSource = localDataSource;
 
   @override
-  Future<ApiResult<List<Coin>>> fetchMarketCoins() {
+  Future<ApiResult<List<Coin>>> fetchMarketCoins({
+    required String currency,
+    String? sortOrder,
+  }) {
     return fetchData(
-      remoteFetch: () => _remoteDataSource.getMarketCoins(),
-      // For online-only phase, any attempt to fetch locally is a failure.
+      remoteFetch: () => _remoteDataSource.getMarketCoins(
+        currency: currency,
+      ),
       localFetch: () async {
-        return const ApiResult.failure(
-          ApiFailure.unknown(
-            "Offline functionality is not available yet. Please check your internet connection.",
-          ),
-        );
+        // This logic remains a "fail-fast" implementation for now.
+        return const ApiResult.failure(ApiFailure.unknown(
+          "Offline functionality is not available yet. Please check your internet connection."
+        ));
       },
     );
   }
+
+    @override
+  Future<ApiResult<List<Coin>>> searchCoins(String query) {
+    // We will implement the full logic for search later.
+    // For now, it will only work when online.
+    if (!connectivityService.isOnline) {
+      return Future.value(const ApiResult.failure(ApiFailure.network("Search requires an internet connection.")));
+    }
+    return _remoteDataSource.searchCoins(query);
+  }
 }
+

@@ -21,7 +21,8 @@ mixin _$Coin {
 @HiveField(2) String get name;/// The URL of the coin's logo image.
 @HiveField(3) String get image;/// The current price in the user's selected fiat currency.
 @HiveField(4)@JsonKey(name: 'current_price') double get currentPrice;/// The total market capitalization in the user's selected fiat currency.
-@HiveField(5)@JsonKey(name: 'market_cap') int get marketCap;/// The percentage change in price over the last 24 hours.
+@HiveField(5)@JsonKey(name: 'market_cap') int? get marketCap;// The rank of coin on market cap.
+@HiveField(8)@JsonKey(name: 'market_cap_rank') int get marketCapRank;/// The percentage change in price over the last 24 hours.
 @HiveField(6)@JsonKey(name: 'price_change_percentage_24h') double get priceChangePercentage24h;/// A small list of price points for the last 7 days, used for a preview sparkline chart.
 /// This can be null if the API doesn't provide it.
 @HiveField(7)@JsonKey(name: 'sparkline_in_7d') Sparkline? get sparkline;
@@ -37,16 +38,16 @@ $CoinCopyWith<Coin> get copyWith => _$CoinCopyWithImpl<Coin>(this as Coin, _$ide
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Coin&&(identical(other.id, id) || other.id == id)&&(identical(other.symbol, symbol) || other.symbol == symbol)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image)&&(identical(other.currentPrice, currentPrice) || other.currentPrice == currentPrice)&&(identical(other.marketCap, marketCap) || other.marketCap == marketCap)&&(identical(other.priceChangePercentage24h, priceChangePercentage24h) || other.priceChangePercentage24h == priceChangePercentage24h)&&(identical(other.sparkline, sparkline) || other.sparkline == sparkline));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Coin&&(identical(other.id, id) || other.id == id)&&(identical(other.symbol, symbol) || other.symbol == symbol)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image)&&(identical(other.currentPrice, currentPrice) || other.currentPrice == currentPrice)&&(identical(other.marketCap, marketCap) || other.marketCap == marketCap)&&(identical(other.marketCapRank, marketCapRank) || other.marketCapRank == marketCapRank)&&(identical(other.priceChangePercentage24h, priceChangePercentage24h) || other.priceChangePercentage24h == priceChangePercentage24h)&&(identical(other.sparkline, sparkline) || other.sparkline == sparkline));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,symbol,name,image,currentPrice,marketCap,priceChangePercentage24h,sparkline);
+int get hashCode => Object.hash(runtimeType,id,symbol,name,image,currentPrice,marketCap,marketCapRank,priceChangePercentage24h,sparkline);
 
 @override
 String toString() {
-  return 'Coin(id: $id, symbol: $symbol, name: $name, image: $image, currentPrice: $currentPrice, marketCap: $marketCap, priceChangePercentage24h: $priceChangePercentage24h, sparkline: $sparkline)';
+  return 'Coin(id: $id, symbol: $symbol, name: $name, image: $image, currentPrice: $currentPrice, marketCap: $marketCap, marketCapRank: $marketCapRank, priceChangePercentage24h: $priceChangePercentage24h, sparkline: $sparkline)';
 }
 
 
@@ -57,7 +58,7 @@ abstract mixin class $CoinCopyWith<$Res>  {
   factory $CoinCopyWith(Coin value, $Res Function(Coin) _then) = _$CoinCopyWithImpl;
 @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String symbol,@HiveField(2) String name,@HiveField(3) String image,@HiveField(4)@JsonKey(name: 'current_price') double currentPrice,@HiveField(5)@JsonKey(name: 'market_cap') int marketCap,@HiveField(6)@JsonKey(name: 'price_change_percentage_24h') double priceChangePercentage24h,@HiveField(7)@JsonKey(name: 'sparkline_in_7d') Sparkline? sparkline
+@HiveField(0) String id,@HiveField(1) String symbol,@HiveField(2) String name,@HiveField(3) String image,@HiveField(4)@JsonKey(name: 'current_price') double currentPrice,@HiveField(5)@JsonKey(name: 'market_cap') int? marketCap,@HiveField(8)@JsonKey(name: 'market_cap_rank') int marketCapRank,@HiveField(6)@JsonKey(name: 'price_change_percentage_24h') double priceChangePercentage24h,@HiveField(7)@JsonKey(name: 'sparkline_in_7d') Sparkline? sparkline
 });
 
 
@@ -74,14 +75,15 @@ class _$CoinCopyWithImpl<$Res>
 
 /// Create a copy of Coin
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = null,Object? priceChangePercentage24h = null,Object? sparkline = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = freezed,Object? marketCapRank = null,Object? priceChangePercentage24h = null,Object? sparkline = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as double,marketCap: freezed == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as int?,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
 as int,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
 as double,sparkline: freezed == sparkline ? _self.sparkline : sparkline // ignore: cast_nullable_to_non_nullable
 as Sparkline?,
@@ -181,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int marketCap, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int? marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank')  int marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Coin() when $default != null:
-return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.priceChangePercentage24h,_that.sparkline);case _:
+return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.priceChangePercentage24h,_that.sparkline);case _:
   return orElse();
 
 }
@@ -202,10 +204,10 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int marketCap, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int? marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank')  int marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)  $default,) {final _that = this;
 switch (_that) {
 case _Coin():
-return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.priceChangePercentage24h,_that.sparkline);case _:
+return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.priceChangePercentage24h,_that.sparkline);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -222,10 +224,10 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int marketCap, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@HiveField(0)  String id, @HiveField(1)  String symbol, @HiveField(2)  String name, @HiveField(3)  String image, @HiveField(4)@JsonKey(name: 'current_price')  double currentPrice, @HiveField(5)@JsonKey(name: 'market_cap')  int? marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank')  int marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h')  double priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d')  Sparkline? sparkline)?  $default,) {final _that = this;
 switch (_that) {
 case _Coin() when $default != null:
-return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.priceChangePercentage24h,_that.sparkline);case _:
+return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,_that.marketCap,_that.marketCapRank,_that.priceChangePercentage24h,_that.sparkline);case _:
   return null;
 
 }
@@ -237,7 +239,7 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 @JsonSerializable()
 
 class _Coin implements Coin {
-  const _Coin({@HiveField(0) required this.id, @HiveField(1) required this.symbol, @HiveField(2) required this.name, @HiveField(3) required this.image, @HiveField(4)@JsonKey(name: 'current_price') required this.currentPrice, @HiveField(5)@JsonKey(name: 'market_cap') required this.marketCap, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h') required this.priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d') this.sparkline});
+  const _Coin({@HiveField(0) required this.id, @HiveField(1) required this.symbol, @HiveField(2) required this.name, @HiveField(3) required this.image, @HiveField(4)@JsonKey(name: 'current_price') required this.currentPrice, @HiveField(5)@JsonKey(name: 'market_cap') required this.marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank') required this.marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h') required this.priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d') this.sparkline});
   factory _Coin.fromJson(Map<String, dynamic> json) => _$CoinFromJson(json);
 
 /// The unique identifier for the coin (e.g., 'bitcoin').
@@ -251,7 +253,9 @@ class _Coin implements Coin {
 /// The current price in the user's selected fiat currency.
 @override@HiveField(4)@JsonKey(name: 'current_price') final  double currentPrice;
 /// The total market capitalization in the user's selected fiat currency.
-@override@HiveField(5)@JsonKey(name: 'market_cap') final  int marketCap;
+@override@HiveField(5)@JsonKey(name: 'market_cap') final  int? marketCap;
+// The rank of coin on market cap.
+@override@HiveField(8)@JsonKey(name: 'market_cap_rank') final  int marketCapRank;
 /// The percentage change in price over the last 24 hours.
 @override@HiveField(6)@JsonKey(name: 'price_change_percentage_24h') final  double priceChangePercentage24h;
 /// A small list of price points for the last 7 days, used for a preview sparkline chart.
@@ -271,16 +275,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Coin&&(identical(other.id, id) || other.id == id)&&(identical(other.symbol, symbol) || other.symbol == symbol)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image)&&(identical(other.currentPrice, currentPrice) || other.currentPrice == currentPrice)&&(identical(other.marketCap, marketCap) || other.marketCap == marketCap)&&(identical(other.priceChangePercentage24h, priceChangePercentage24h) || other.priceChangePercentage24h == priceChangePercentage24h)&&(identical(other.sparkline, sparkline) || other.sparkline == sparkline));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Coin&&(identical(other.id, id) || other.id == id)&&(identical(other.symbol, symbol) || other.symbol == symbol)&&(identical(other.name, name) || other.name == name)&&(identical(other.image, image) || other.image == image)&&(identical(other.currentPrice, currentPrice) || other.currentPrice == currentPrice)&&(identical(other.marketCap, marketCap) || other.marketCap == marketCap)&&(identical(other.marketCapRank, marketCapRank) || other.marketCapRank == marketCapRank)&&(identical(other.priceChangePercentage24h, priceChangePercentage24h) || other.priceChangePercentage24h == priceChangePercentage24h)&&(identical(other.sparkline, sparkline) || other.sparkline == sparkline));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,symbol,name,image,currentPrice,marketCap,priceChangePercentage24h,sparkline);
+int get hashCode => Object.hash(runtimeType,id,symbol,name,image,currentPrice,marketCap,marketCapRank,priceChangePercentage24h,sparkline);
 
 @override
 String toString() {
-  return 'Coin(id: $id, symbol: $symbol, name: $name, image: $image, currentPrice: $currentPrice, marketCap: $marketCap, priceChangePercentage24h: $priceChangePercentage24h, sparkline: $sparkline)';
+  return 'Coin(id: $id, symbol: $symbol, name: $name, image: $image, currentPrice: $currentPrice, marketCap: $marketCap, marketCapRank: $marketCapRank, priceChangePercentage24h: $priceChangePercentage24h, sparkline: $sparkline)';
 }
 
 
@@ -291,7 +295,7 @@ abstract mixin class _$CoinCopyWith<$Res> implements $CoinCopyWith<$Res> {
   factory _$CoinCopyWith(_Coin value, $Res Function(_Coin) _then) = __$CoinCopyWithImpl;
 @override @useResult
 $Res call({
-@HiveField(0) String id,@HiveField(1) String symbol,@HiveField(2) String name,@HiveField(3) String image,@HiveField(4)@JsonKey(name: 'current_price') double currentPrice,@HiveField(5)@JsonKey(name: 'market_cap') int marketCap,@HiveField(6)@JsonKey(name: 'price_change_percentage_24h') double priceChangePercentage24h,@HiveField(7)@JsonKey(name: 'sparkline_in_7d') Sparkline? sparkline
+@HiveField(0) String id,@HiveField(1) String symbol,@HiveField(2) String name,@HiveField(3) String image,@HiveField(4)@JsonKey(name: 'current_price') double currentPrice,@HiveField(5)@JsonKey(name: 'market_cap') int? marketCap,@HiveField(8)@JsonKey(name: 'market_cap_rank') int marketCapRank,@HiveField(6)@JsonKey(name: 'price_change_percentage_24h') double priceChangePercentage24h,@HiveField(7)@JsonKey(name: 'sparkline_in_7d') Sparkline? sparkline
 });
 
 
@@ -308,14 +312,15 @@ class __$CoinCopyWithImpl<$Res>
 
 /// Create a copy of Coin
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = null,Object? priceChangePercentage24h = null,Object? sparkline = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? symbol = null,Object? name = null,Object? image = null,Object? currentPrice = null,Object? marketCap = freezed,Object? marketCapRank = null,Object? priceChangePercentage24h = null,Object? sparkline = freezed,}) {
   return _then(_Coin(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,symbol: null == symbol ? _self.symbol : symbol // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,image: null == image ? _self.image : image // ignore: cast_nullable_to_non_nullable
 as String,currentPrice: null == currentPrice ? _self.currentPrice : currentPrice // ignore: cast_nullable_to_non_nullable
-as double,marketCap: null == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as double,marketCap: freezed == marketCap ? _self.marketCap : marketCap // ignore: cast_nullable_to_non_nullable
+as int?,marketCapRank: null == marketCapRank ? _self.marketCapRank : marketCapRank // ignore: cast_nullable_to_non_nullable
 as int,priceChangePercentage24h: null == priceChangePercentage24h ? _self.priceChangePercentage24h : priceChangePercentage24h // ignore: cast_nullable_to_non_nullable
 as double,sparkline: freezed == sparkline ? _self.sparkline : sparkline // ignore: cast_nullable_to_non_nullable
 as Sparkline?,

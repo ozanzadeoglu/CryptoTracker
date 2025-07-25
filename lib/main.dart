@@ -17,6 +17,7 @@ import 'package:crypto_tracker/features/market/data/datasources/market_remote_da
 import 'package:crypto_tracker/features/market/data/repository/market_repository_impl.dart';
 import 'package:crypto_tracker/features/market/domain/repositories/i_market_repository.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
+import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/i_settings_local_data_source.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/settings_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
@@ -40,71 +41,79 @@ void main() async {
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
   final apiCacheBox = await Hive.openBox(CacheBoxNames.apiCache);
 
-
   runApp(
     MultiProvider(
-     providers: [
-      //========================================================================
-      // CORE - INFRASTRUCTURE & SINGLETON SERVICES
-      // (Services that have no other provider dependencies)
-      //========================================================================
-      Provider<ILoggerService>(
-        create: (_) => ConsoleLoggerService.instance,
-        dispose: (_, service) => service.dispose(),
-      ),
-      Provider<IConnectivityService>(
-        create: (_) => connectivityService, // From main()
-        dispose: (_, service) => service.dispose(),
-      ),
-      ProxyProvider<ILoggerService, ApiClient>(
-        update: (_, logger, __) => ApiClient(logger),
-      ),
-
-      //========================================================================
-      // FEATURE DATA & DOMAIN LAYERS
-      // (Grouped by feature for clarity)
-      //========================================================================
-
-      // --- Feature: Settings ---
-      Provider<ISettingsLocalDataSource>(
-        create: (_) => SettingsLocalDataSourceImpl(
-          HiveCacheService(settingsBox),
+      providers: [
+        //========================================================================
+        // CORE - INFRASTRUCTURE & SINGLETON SERVICES
+        // (Services that have no other provider dependencies)
+        //========================================================================
+        Provider<ILoggerService>(
+          create: (_) => ConsoleLoggerService.instance,
+          dispose: (_, service) => service.dispose(),
         ),
-      ),
-      ProxyProvider<ISettingsLocalDataSource, ISettingsRepository>(
-        update: (_, ds, __) => SettingsRepositoryImpl(ds),
-      ),
+        Provider<IConnectivityService>(
+          create: (_) => connectivityService, // From main()
+          dispose: (_, service) => service.dispose(),
+        ),
+        ProxyProvider<ILoggerService, ApiClient>(
+          update: (_, logger, __) => ApiClient(logger),
+        ),
 
-      // --- Feature: Market ---
-      ProxyProvider<ApiClient, IMarketRemoteDataSource>(
-        update: (_, apiClient, __) => MarketRemoteDataSourceImpl(apiClient),
-      ),
-      Provider<IMarketLocalDataSource>(
-        create: (_) => MarketLocalDataSourceImpl(
-          HiveCacheService(apiCacheBox),
+        //========================================================================
+        // FEATURE DATA & DOMAIN LAYERS
+        // (Grouped by feature for clarity)
+        //========================================================================
+
+        // --- Feature: Settings ---
+        Provider<ISettingsLocalDataSource>(
+          create: (_) =>
+              SettingsLocalDataSourceImpl(HiveCacheService(settingsBox)),
         ),
-      ),
-      ProxyProvider3<IMarketRemoteDataSource, IMarketLocalDataSource, IConnectivityService, IMarketRepository>(
-        update: (_, remote, local, connectivity, __) => MarketRepositoryImpl(
-          remoteDataSource: remote,
-          localDataSource: local,
-          connectivityService: connectivity,
+        ProxyProvider<ISettingsLocalDataSource, ISettingsRepository>(
+          update: (_, ds, __) => SettingsRepositoryImpl(ds),
         ),
-      ),
-      ProxyProvider<IMarketRepository, GetMarketCoinsUseCase>(
-        update: (_, repo, __) => GetMarketCoinsUseCase(repo),
-      ),
-      
-      //========================================================================
-      // GLOBAL UI PROVIDERS
-      // (ChangeNotifiers that control global UI state)
-      //========================================================================
-      ChangeNotifierProxyProvider<ISettingsRepository, ThemeProvider>(
-        create: (context) => ThemeProvider(context.read<ISettingsRepository>()),
-        update: (_, repo, previous) => previous ?? ThemeProvider(repo),
-      ),
-      ChangeNotifierProvider(create: (_) => LocaleProvider()),
-    ],
+
+        // --- Feature: Market ---
+        ProxyProvider<ApiClient, IMarketRemoteDataSource>(
+          update: (_, apiClient, __) => MarketRemoteDataSourceImpl(apiClient),
+        ),
+        Provider<IMarketLocalDataSource>(
+          create: (_) =>
+              MarketLocalDataSourceImpl(HiveCacheService(apiCacheBox)),
+        ),
+        ProxyProvider3<
+          IMarketRemoteDataSource,
+          IMarketLocalDataSource,
+          IConnectivityService,
+          IMarketRepository
+        >(
+          update: (_, remote, local, connectivity, __) => MarketRepositoryImpl(
+            remoteDataSource: remote,
+            localDataSource: local,
+            connectivityService: connectivity,
+          ),
+        ),
+
+        // UseCases
+        ProxyProvider<IMarketRepository, GetMarketCoinsUseCase>(
+          update: (_, repo, __) => GetMarketCoinsUseCase(repo),
+        ),
+        ProxyProvider<IMarketRepository, SearchCoinsUseCase>(
+          update: (_, repo, __) => SearchCoinsUseCase(repo),
+        ),
+
+        //========================================================================
+        // GLOBAL UI PROVIDERS
+        // (ChangeNotifiers that control global UI state)
+        //========================================================================
+        ChangeNotifierProxyProvider<ISettingsRepository, ThemeProvider>(
+          create: (context) =>
+              ThemeProvider(context.read<ISettingsRepository>()),
+          update: (_, repo, previous) => previous ?? ThemeProvider(repo),
+        ),
+        ChangeNotifierProvider(create: (_) => LocaleProvider()),
+      ],
 
       child: const CryptoTrackerState(),
     ),

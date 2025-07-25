@@ -1,5 +1,8 @@
+import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
+import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/presentation/viewmodel/market_viewmodel.dart';
+import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crypto_tracker/core/router/app_routes.dart';
@@ -16,15 +19,17 @@ abstract final class AppRouter {
         name: AppRoutes.portfolioName,
         builder: (context, state) => const PortfolioScreen(),
       ),
-            GoRoute(
+      GoRoute(
         path: AppRoutes.market,
         name: AppRoutes.marketName,
         builder: (context, state) {
           return ChangeNotifierProvider(
             create: (context) => MarketViewModel(
-              context.read<GetMarketCoinsUseCase>(),
+              getMarketCoinsUseCase: context.read<GetMarketCoinsUseCase>(),
+              searchCoinsUseCase: context.read<SearchCoinsUseCase>(),
+              connectivityService: context.read<IConnectivityService>(),
+              settingsRepository: context.read<ISettingsRepository>(),
             ),
-            // The child is our "dumb" screen widget.
             child: const MarketScreen(),
           );
         },
@@ -36,4 +41,6 @@ abstract final class AppRouter {
       ),
     ),
   );
+
+  static var instance;
 }

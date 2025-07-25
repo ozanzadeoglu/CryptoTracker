@@ -9,7 +9,11 @@ import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 abstract class IMarketRepository {
   /// Fetches the list of top coins from the market.
   ///
-  /// Returns an [ApiResult] containing a list of [Coin] objects on success,
-  /// or an [ApiFailure] on failure.
-  Future<ApiResult<List<Coin>>> fetchMarketCoins();
+  /// Requires a [currency] for pricing and an optional [sortOrder] for API-side sorting.
+  Future<ApiResult<List<Coin>>> fetchMarketCoins({
+    required String currency,
+  });
+
+  /// Searches for coins based on a query.
+  Future<ApiResult<List<Coin>>> searchCoins(String query);
 }

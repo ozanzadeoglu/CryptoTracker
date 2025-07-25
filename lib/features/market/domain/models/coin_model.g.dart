@@ -22,7 +22,8 @@ class CoinAdapter extends TypeAdapter<Coin> {
       name: fields[2] as String,
       image: fields[3] as String,
       currentPrice: fields[4] as double,
-      marketCap: fields[5] as int,
+      marketCap: fields[5] as int?,
+      marketCapRank: fields[8] as int,
       priceChangePercentage24h: fields[6] as double,
       sparkline: fields[7] as Sparkline?,
     );
@@ -31,7 +32,7 @@ class CoinAdapter extends TypeAdapter<Coin> {
   @override
   void write(BinaryWriter writer, Coin obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.id)
       ..writeByte(1)
@@ -44,6 +45,8 @@ class CoinAdapter extends TypeAdapter<Coin> {
       ..write(obj.currentPrice)
       ..writeByte(5)
       ..write(obj.marketCap)
+      ..writeByte(8)
+      ..write(obj.marketCapRank)
       ..writeByte(6)
       ..write(obj.priceChangePercentage24h)
       ..writeByte(7)
@@ -103,7 +106,8 @@ _Coin _$CoinFromJson(Map<String, dynamic> json) => _Coin(
   name: json['name'] as String,
   image: json['image'] as String,
   currentPrice: (json['current_price'] as num).toDouble(),
-  marketCap: (json['market_cap'] as num).toInt(),
+  marketCap: (json['market_cap'] as num?)?.toInt(),
+  marketCapRank: (json['market_cap_rank'] as num).toInt(),
   priceChangePercentage24h: (json['price_change_percentage_24h'] as num)
       .toDouble(),
   sparkline: json['sparkline_in_7d'] == null
@@ -118,6 +122,7 @@ Map<String, dynamic> _$CoinToJson(_Coin instance) => <String, dynamic>{
   'image': instance.image,
   'current_price': instance.currentPrice,
   'market_cap': instance.marketCap,
+  'market_cap_rank': instance.marketCapRank,
   'price_change_percentage_24h': instance.priceChangePercentage24h,
   'sparkline_in_7d': instance.sparkline,
 };

@@ -1,89 +1,106 @@
+import 'package:crypto_tracker/common/utils/number_utils.dart';
+import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
+import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
+import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/presentation/viewmodel/market_viewmodel.dart';
+import 'package:crypto_tracker/common/widgets/error_display.dart';
+import 'package:crypto_tracker/core/theme/app_theme.dart';
+import 'package:crypto_tracker/common/utils/app_paddings.dart';
 
-class MarketScreen extends StatefulWidget {
+// Import the private widgets as parts
+part 'widgets/market_list_item.dart';
+part 'widgets/sort_option_tile.dart';
+part 'widgets/sort_options_sheet.dart';
+
+/// The main screen for displaying the cryptocurrency market list.
+///
+/// This is a "dumb" widget that is driven entirely by the [MarketViewModel].
+class MarketScreen extends StatelessWidget {
   const MarketScreen({super.key});
 
   @override
-  State<MarketScreen> createState() => _MarketScreenState();
-}
-
-class _MarketScreenState extends State<MarketScreen> {
-  @override
-  void initState() {
-    super.initState();
-    // Use a post-frame callback to ensure the context is available.
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Trigger the initial data fetch. We use `context.read` because we are
-      // in a lifecycle method and don't need to listen for changes here.
-      context.read<MarketViewModel>().fetchMarketCoins();
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
-    // Use `context.watch` to listen for changes in the ViewModel.
-    // The `build` method will re-run whenever `notifyListeners` is called.
     final viewModel = context.watch<MarketViewModel>();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Market'), // This should be localized later
+        title: viewModel.isSearchActive
+            ? TextField(
+                controller:
+                    viewModel.searchController, // Use controller from ViewModel
+                autofocus: true,
+                decoration: const InputDecoration(
+                  hintText: 'Search coins...', // Should be localized
+                  border: InputBorder.none,
+                ),
+                onChanged:
+                    viewModel.onSearchQueryChanged, // Call method on ViewModel
+              )
+            : const Text('Market'), // Should be localized
+        actions: [
+          IconButton(
+            onPressed: viewModel.toggleSearch, // Call method on ViewModel
+            icon: Icon(viewModel.isSearchActive ? Icons.close : Icons.search),
+          ),
+          if (!viewModel.isSearchActive)
+            IconButton(
+              onPressed: () => _showSortOptions(context, viewModel),
+              icon: const Icon(Icons.sort),
+            ),
+        ],
       ),
-      body: _buildBody(viewModel),
+      body: RefreshIndicator(
+        onRefresh: viewModel.refresh, // Call method on ViewModel
+        child: _Body(),
+      ),
     );
   }
 
-  Widget _buildBody(MarketViewModel viewModel) {
+  void _showSortOptions(BuildContext context, MarketViewModel viewModel) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => _SortOptionsSheet(
+        changeSortFunction: viewModel.changeSortOption,
+        currentSortOption: viewModel.currentSortOption,
+      ),
+    );
+  }
+}
+
+/// The main body of the MarketScreen, handling loading, error, and data states.
+class _Body extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final viewModel = context.watch<MarketViewModel>();
     if (viewModel.isLoading && viewModel.coins.isEmpty) {
-      // Show a full-screen loader only on the initial load
       return const Center(child: CircularProgressIndicator());
     }
 
     if (viewModel.errorMessage != null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(viewModel.errorMessage!),
-            const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () => context.read<MarketViewModel>().fetchMarketCoins(),
-              child: const Text('Retry'), // Should be localized
-            ),
-          ],
-        ),
+      return ErrorDisplay(
+        message: viewModel.errorMessage!,
+        onRetry: viewModel.refresh,
       );
     }
 
-    // If we have data, show it in a list
+    if (viewModel.coins.isEmpty && !viewModel.isLoading) {
+      return const Center(
+        child: Text("No coins found."),
+      ); // Should be localized
+    }
+
     return ListView.builder(
+      padding: const EdgeInsets.only(top: AppPaddings.xs),
       itemCount: viewModel.coins.length,
       itemBuilder: (context, index) {
         final coin = viewModel.coins[index];
-        // We will create a dedicated widget for this later.
-        return ListTile(
-          leading: CircleAvatar(
-            backgroundImage: NetworkImage(coin.image),
-          ),
-          title: Text(coin.name),
-          subtitle: Text(coin.symbol.toUpperCase()),
-          trailing: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text('\$${coin.currentPrice.toStringAsFixed(2)}'), // Should use currency formatter
-              Text(
-                '${coin.priceChangePercentage24h.toStringAsFixed(2)}%',
-                style: TextStyle(
-                  color: coin.priceChangePercentage24h >= 0 ? Colors.green : Colors.red,
-                ),
-              ),
-            ],
-          ),
-        );
+        return _MarketListItem(coin: coin, onTap: () {});
       },
     );
   }
 }
+
+
