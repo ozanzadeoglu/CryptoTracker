@@ -158,6 +158,18 @@ abstract class AppLocalizations {
   /// **'Name (A-Z)'**
   String get sortOptionsAlphabetic;
 
+  /// No description provided for @searchCoins.
+  ///
+  /// In en, this message translates to:
+  /// **'Search coins'**
+  String get searchCoins;
+
+  /// No description provided for @noCoinsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No coins found.'**
+  String get noCoinsFound;
+
   /// Test greeting
   ///
   /// In en, this message translates to:

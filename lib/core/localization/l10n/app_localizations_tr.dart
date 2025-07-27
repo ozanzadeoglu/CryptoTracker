@@ -39,6 +39,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get sortOptionsAlphabetic => 'Alfabetik (A-Z)';
 
   @override
+  String get searchCoins => 'Kripto para ara';
+
+  @override
+  String get noCoinsFound => 'Hiç kripto para bulunamadı.';
+
+  @override
   String hello(String userName) {
     return 'Merhaba, $userName!';
   }

@@ -1,15 +1,16 @@
 {
   "@@locale": "tr",
-
   "appTitle": "TrackIt",
   "market": "Piyasa",
   "portfolio": "Portföy",
   "settings": "Ayarlar",
   "hello": "Merhaba, {userName}!",
-  "errorMessage" : "Bir Hata Oluştu", 
-  "tryAgain" : "Tekrar Dene",
+  "errorMessage": "Bir Hata Oluştu",
+  "tryAgain": "Tekrar Dene",
   "sortOptionsGainers": "Yükseliş",
   "sortOptionsLosers": "Düşüş",
   "sortOptionsMarketCap": "Piyasa Değeri",
-  "sortOptionsAlphabetic": "Alfabetik (A-Z)"
+  "sortOptionsAlphabetic": "Alfabetik (A-Z)",
+  "searchCoins": "Kripto para ara",
+  "noCoinsFound": "Hiç kripto para bulunamadı."
 }

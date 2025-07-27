@@ -39,6 +39,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sortOptionsAlphabetic => 'Name (A-Z)';
 
   @override
+  String get searchCoins => 'Search coins';
+
+  @override
+  String get noCoinsFound => 'No coins found.';
+
+  @override
   String hello(String userName) {
     return 'Hello, $userName!';
   }

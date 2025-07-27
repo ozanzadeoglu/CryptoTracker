@@ -15,6 +15,8 @@
   "sortOptionsLosers": "Losers",
   "sortOptionsMarketCap": "Market Cap",
   "sortOptionsAlphabetic": "Name (A-Z)",
+  "searchCoins" : "Search coins",
+  "noCoinsFound" : "No coins found.",
 
   "hello": "Hello, {userName}!",
   "@hello": {

@@ -1,10 +1,8 @@
 import 'package:crypto_tracker/common/utils/number_utils.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
-import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
-import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/presentation/viewmodel/market_viewmodel.dart';
 import 'package:crypto_tracker/common/widgets/error_display.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
@@ -30,19 +28,19 @@ class MarketScreen extends StatelessWidget {
         title: viewModel.isSearchActive
             ? TextField(
                 controller:
-                    viewModel.searchController, // Use controller from ViewModel
+                    viewModel.searchController, 
                 autofocus: true,
-                decoration: const InputDecoration(
-                  hintText: 'Search coins...', // Should be localized
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context)!.searchCoins,
                   border: InputBorder.none,
                 ),
                 onChanged:
-                    viewModel.onSearchQueryChanged, // Call method on ViewModel
+                    viewModel.onSearchQueryChanged,
               )
-            : const Text('Market'), // Should be localized
+            : Text(AppLocalizations.of(context)!.market), 
         actions: [
           IconButton(
-            onPressed: viewModel.toggleSearch, // Call method on ViewModel
+            onPressed: viewModel.toggleSearch, 
             icon: Icon(viewModel.isSearchActive ? Icons.close : Icons.search),
           ),
           if (!viewModel.isSearchActive)
@@ -53,7 +51,7 @@ class MarketScreen extends StatelessWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: viewModel.refresh, // Call method on ViewModel
+        onRefresh: viewModel.refresh, 
         child: _Body(),
       ),
     );
@@ -87,8 +85,8 @@ class _Body extends StatelessWidget {
     }
 
     if (viewModel.coins.isEmpty && !viewModel.isLoading) {
-      return const Center(
-        child: Text("No coins found."),
+      return Center(
+        child: Text(AppLocalizations.of(context)!.noCoinsFound),
       ); // Should be localized
     }
 
