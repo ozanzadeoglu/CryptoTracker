@@ -15,6 +15,9 @@ sealed class ApiFailure {
 
   /// Factory for other, unexpected errors.
   const factory ApiFailure.unknown([String message]) = UnknownFailure._;
+
+  /// Factory for cache errors.
+  const factory ApiFailure.cache([String message]) = CacheFailure._;
 }
 
 final class NetworkFailure extends ApiFailure {
