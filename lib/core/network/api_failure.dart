@@ -18,7 +18,7 @@ sealed class ApiFailure {
 }
 
 final class NetworkFailure extends ApiFailure {
-  const NetworkFailure._([String message = "Network error occurred."]) : super(message);
+  const NetworkFailure._([super.message = "Network error occurred."]);
 }
 
 final class ServerFailure extends ApiFailure {
@@ -27,9 +27,13 @@ final class ServerFailure extends ApiFailure {
 }
 
 final class NotFoundFailure extends ApiFailure {
-  const NotFoundFailure._([String message = "Resource not found."]) : super(message);
+  const NotFoundFailure._([super.message = "Resource not found."]);
 }
 
 final class UnknownFailure extends ApiFailure {
-  const UnknownFailure._([String message = "An unknown error occurred."]) : super(message);
+  const UnknownFailure._([super.message = "An unknown error occurred."]);
+}
+
+final class CacheFailure extends ApiFailure {
+  const CacheFailure._([super.message = "A cache error occured."]);
 }
