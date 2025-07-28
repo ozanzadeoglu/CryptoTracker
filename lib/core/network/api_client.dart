@@ -1,7 +1,7 @@
 import "package:crypto_tracker/core/config/api_keys.dart";
 import "package:crypto_tracker/core/network/api_failure.dart";
 import "package:crypto_tracker/core/network/api_result.dart";
-import "package:crypto_tracker/core/services/logging/logger_service.dart.dart";
+import "package:crypto_tracker/core/services/logging/logger_service.dart";
 import "package:dio/dio.dart";
 
 class ApiClient {
@@ -50,7 +50,7 @@ class ApiClient {
         source: "ApiClient",
       );
       return ApiResult.failure(
-        ApiFailure.unknown("An unexpected error occurred..."),
+        const ApiFailure.unknown("An unexpected error occurred..."),
       );
     }
   }
