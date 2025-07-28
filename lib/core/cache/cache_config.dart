@@ -5,6 +5,7 @@ abstract final class CacheBoxNames {
   static const String marketCache = "marketCacheBox";
 }
 
+/// Contains the type id's of all Hive classes used in application.
 abstract final class HiveTypeIds {
   static const int coin = 1;
   static const int sparkline = 2;
