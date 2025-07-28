@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:crypto_tracker/core/services/logging/logger_service.dart.dart';
+import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:logging/logging.dart';
 
 // ignore_for_file: avoid_print
