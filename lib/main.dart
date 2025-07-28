@@ -39,7 +39,7 @@ void main() async {
   await Hive.initFlutter();
 
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
-  final apiCacheBox = await Hive.openBox(CacheBoxNames.apiCache);
+  final apiCacheBox = await Hive.openBox(CacheBoxNames.marketCache);
 
   runApp(
     MultiProvider(

@@ -1,3 +1,4 @@
+import 'package:crypto_tracker/core/cache/cache_config.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 
@@ -9,7 +10,7 @@ part 'coin_model.g.dart';
 /// This model is designed based on the data returned from the CoinGecko `/coins/markets` endpoint.
 /// It contains all the necessary information for both list views and the basic details of a coin.
 @freezed
-@HiveType(typeId: 1)
+@HiveType(typeId: HiveTypeIds.coin)
 abstract class Coin with _$Coin {
   const factory Coin({
     /// The unique identifier for the coin (e.g., 'bitcoin').
@@ -47,7 +48,7 @@ abstract class Coin with _$Coin {
 
 /// Represents the sparkline data for a [Coin].
 @freezed
-@HiveType(typeId: 2)
+@HiveType(typeId: HiveTypeIds.sparkline)
 abstract class Sparkline with _$Sparkline {
   const factory Sparkline({
     /// A list of price points over a time period.

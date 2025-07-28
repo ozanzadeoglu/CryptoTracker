@@ -1,3 +1,4 @@
+import 'package:crypto_tracker/core/cache/cache_config.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:hive/hive.dart';
 
@@ -5,7 +6,7 @@ part 'transaction_model.freezed.dart';
 part 'transaction_model.g.dart';
 
 /// Represents the type of a user transaction.
-@HiveType(typeId: 3)
+@HiveType(typeId: HiveTypeIds.transactionType)
 enum TransactionType {
   @HiveField(0)
   buy,
@@ -18,7 +19,7 @@ enum TransactionType {
 /// This is a core domain model for the portfolio feature, and it is the
 /// single source of truth for the user's holdings.
 @freezed
-@HiveType(typeId: 4)
+@HiveType(typeId: HiveTypeIds.transaction)
 abstract class Transaction with _$Transaction {
   const factory Transaction({
     /// A unique identifier for the transaction (e.g., a UUID).

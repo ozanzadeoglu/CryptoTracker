@@ -2,7 +2,14 @@
 abstract final class CacheBoxNames {
   /// The box for storing user-specific settings.
   static const String settings = 'settingsBox';
-  static const String apiCache = "apiCacheBox";
+  static const String marketCache = "marketCacheBox";
+}
+
+abstract final class HiveTypeIds {
+  static const int coin = 1;
+  static const int sparkline = 2;
+  static const int transactionType = 3;
+  static const int transaction = 4;
 }
 
 /// Contains the keys for all values stored in the Hive boxes.
