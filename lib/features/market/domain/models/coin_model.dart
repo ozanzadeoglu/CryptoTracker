@@ -1,6 +1,8 @@
+// ignore_for_file: unused_element
+
 import 'package:crypto_tracker/core/cache/cache_config.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 part 'coin_model.freezed.dart';
 part 'coin_model.g.dart';
@@ -42,6 +44,8 @@ abstract class Coin with _$Coin {
     @HiveField(7) @JsonKey(name: 'sparkline_in_7d') Sparkline? sparkline,
   }) = _Coin;
 
+  const Coin._();
+
   /// Creates a [Coin] instance from a JSON map.
   factory Coin.fromJson(Map<String, dynamic> json) => _$CoinFromJson(json);
 }
@@ -54,6 +58,9 @@ abstract class Sparkline with _$Sparkline {
     /// A list of price points over a time period.
     @HiveField(0) required List<double> price,
   }) = _Sparkline;
+
+  const Sparkline._(); 
+
   
   /// Creates a [Sparkline] instance from a JSON map.
   factory Sparkline.fromJson(Map<String, dynamic> json) => _$SparklineFromJson(json);

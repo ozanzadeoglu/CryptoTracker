@@ -8,7 +8,7 @@ part of 'coin_model.dart';
 
 class CoinAdapter extends TypeAdapter<Coin> {
   @override
-  final int typeId = 1;
+  final typeId = 1;
 
   @override
   Coin read(BinaryReader reader) {
@@ -21,10 +21,10 @@ class CoinAdapter extends TypeAdapter<Coin> {
       symbol: fields[1] as String,
       name: fields[2] as String,
       image: fields[3] as String,
-      currentPrice: fields[4] as double,
-      marketCap: fields[5] as int?,
-      marketCapRank: fields[8] as int,
-      priceChangePercentage24h: fields[6] as double,
+      currentPrice: (fields[4] as num).toDouble(),
+      marketCap: (fields[5] as num?)?.toInt(),
+      marketCapRank: (fields[8] as num).toInt(),
+      priceChangePercentage24h: (fields[6] as num).toDouble(),
       sparkline: fields[7] as Sparkline?,
     );
   }
@@ -45,12 +45,12 @@ class CoinAdapter extends TypeAdapter<Coin> {
       ..write(obj.currentPrice)
       ..writeByte(5)
       ..write(obj.marketCap)
-      ..writeByte(8)
-      ..write(obj.marketCapRank)
       ..writeByte(6)
       ..write(obj.priceChangePercentage24h)
       ..writeByte(7)
-      ..write(obj.sparkline);
+      ..write(obj.sparkline)
+      ..writeByte(8)
+      ..write(obj.marketCapRank);
   }
 
   @override
@@ -66,7 +66,7 @@ class CoinAdapter extends TypeAdapter<Coin> {
 
 class SparklineAdapter extends TypeAdapter<Sparkline> {
   @override
-  final int typeId = 2;
+  final typeId = 2;
 
   @override
   Sparkline read(BinaryReader reader) {

@@ -15,16 +15,20 @@ import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_
 import 'package:crypto_tracker/features/market/data/datasources/market_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/market/data/datasources/market_remote_data_source_impl.dart';
 import 'package:crypto_tracker/features/market/data/repository/market_repository_impl.dart';
+import 'package:crypto_tracker/features/market/domain/models/cached_coins.dart';
+import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 import 'package:crypto_tracker/features/market/domain/repositories/i_market_repository.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
+import 'package:crypto_tracker/features/portfolio/domain/models/transaction_model.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/i_settings_local_data_source.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/settings_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
+import 'package:crypto_tracker/hive_registrar.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
@@ -37,6 +41,8 @@ void main() async {
 
   await dotenv.load(fileName: ".env");
   await Hive.initFlutter();
+  // Hive_ce QOL function to register adapters at once.
+  Hive.registerAdapters();
 
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
   final apiCacheBox = await Hive.openBox(CacheBoxNames.marketCache);

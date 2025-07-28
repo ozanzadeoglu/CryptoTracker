@@ -238,8 +238,8 @@ return $default(_that.id,_that.symbol,_that.name,_that.image,_that.currentPrice,
 /// @nodoc
 @JsonSerializable()
 
-class _Coin implements Coin {
-  const _Coin({@HiveField(0) required this.id, @HiveField(1) required this.symbol, @HiveField(2) required this.name, @HiveField(3) required this.image, @HiveField(4)@JsonKey(name: 'current_price') required this.currentPrice, @HiveField(5)@JsonKey(name: 'market_cap') required this.marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank') required this.marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h') required this.priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d') this.sparkline});
+class _Coin extends Coin {
+  const _Coin({@HiveField(0) required this.id, @HiveField(1) required this.symbol, @HiveField(2) required this.name, @HiveField(3) required this.image, @HiveField(4)@JsonKey(name: 'current_price') required this.currentPrice, @HiveField(5)@JsonKey(name: 'market_cap') required this.marketCap, @HiveField(8)@JsonKey(name: 'market_cap_rank') required this.marketCapRank, @HiveField(6)@JsonKey(name: 'price_change_percentage_24h') required this.priceChangePercentage24h, @HiveField(7)@JsonKey(name: 'sparkline_in_7d') this.sparkline}): super._();
   factory _Coin.fromJson(Map<String, dynamic> json) => _$CoinFromJson(json);
 
 /// The unique identifier for the coin (e.g., 'bitcoin').
@@ -540,8 +540,8 @@ return $default(_that.price);case _:
 /// @nodoc
 @JsonSerializable()
 
-class _Sparkline implements Sparkline {
-  const _Sparkline({@HiveField(0) required final  List<double> price}): _price = price;
+class _Sparkline extends Sparkline {
+  const _Sparkline({@HiveField(0) required final  List<double> price}): _price = price,super._();
   factory _Sparkline.fromJson(Map<String, dynamic> json) => _$SparklineFromJson(json);
 
 /// A list of price points over a time period.

@@ -1,6 +1,6 @@
 import 'package:crypto_tracker/core/cache/cache_config.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:hive/hive.dart';
+import 'package:hive_ce/hive.dart';
 
 part 'transaction_model.freezed.dart';
 part 'transaction_model.g.dart';

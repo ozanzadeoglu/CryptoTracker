@@ -1,5 +1,5 @@
 import 'package:crypto_tracker/core/cache/i_cache_service.dart';
-import 'package:hive_flutter/hive_flutter.dart';
+import 'package:hive_ce_flutter/hive_flutter.dart';
 
 /// An implementation of [ICacheService] that uses a specific Hive [Box] for storage.
 class HiveCacheService implements ICacheService {

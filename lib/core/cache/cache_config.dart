@@ -11,6 +11,7 @@ abstract final class HiveTypeIds {
   static const int sparkline = 2;
   static const int transactionType = 3;
   static const int transaction = 4;
+  static const int cachedCoins = 5;
 }
 
 /// Contains the keys for all values stored in the Hive boxes.

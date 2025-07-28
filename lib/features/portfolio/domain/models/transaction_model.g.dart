@@ -8,7 +8,7 @@ part of 'transaction_model.dart';
 
 class TransactionAdapter extends TypeAdapter<Transaction> {
   @override
-  final int typeId = 4;
+  final typeId = 4;
 
   @override
   Transaction read(BinaryReader reader) {
@@ -20,8 +20,8 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       id: fields[0] as String,
       coinId: fields[1] as String,
       type: fields[2] as TransactionType,
-      amount: fields[3] as double,
-      pricePerCoin: fields[4] as double,
+      amount: (fields[3] as num).toDouble(),
+      pricePerCoin: (fields[4] as num).toDouble(),
       date: fields[5] as DateTime,
     );
   }
@@ -57,7 +57,7 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
 
 class TransactionTypeAdapter extends TypeAdapter<TransactionType> {
   @override
-  final int typeId = 3;
+  final typeId = 3;
 
   @override
   TransactionType read(BinaryReader reader) {
@@ -76,10 +76,8 @@ class TransactionTypeAdapter extends TypeAdapter<TransactionType> {
     switch (obj) {
       case TransactionType.buy:
         writer.writeByte(0);
-        break;
       case TransactionType.sell:
         writer.writeByte(1);
-        break;
     }
   }
 
