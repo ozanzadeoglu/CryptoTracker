@@ -8,7 +8,9 @@ import 'package:hive_ce_flutter/hive_flutter.dart';
 /// wrapping results in [ApiResult] to standardize success/failure handling.
 ///
 /// Internally logs operations and errors via the injected [ILoggerService].
-class HiveCacheService implements ICacheService {
+/// 
+/// Check [ICacheService] doc strings to learn about [R] type.
+class HiveCacheService<R> implements ICacheService<R> {
   final Box _box;
   final ILoggerService _logger;
 

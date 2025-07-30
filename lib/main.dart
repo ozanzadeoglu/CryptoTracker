@@ -1,4 +1,5 @@
 import 'package:crypto_tracker/core/cache/cache_config.dart';
+import 'package:crypto_tracker/core/cache/i_cache_service.dart';
 import 'package:crypto_tracker/core/cache/impl/hive_cache_service.dart';
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/core/connectivity/impl/connectivity_service_impl.dart';
@@ -7,7 +8,7 @@ import 'package:crypto_tracker/core/localization/locale_provider.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
 import 'package:crypto_tracker/core/router/app_router.dart';
 import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
-import 'package:crypto_tracker/core/services/logging/logger_service.dart.dart';
+import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
 import 'package:crypto_tracker/core/theme/theme_provider.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_local_data_source.dart';
@@ -15,12 +16,9 @@ import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_
 import 'package:crypto_tracker/features/market/data/datasources/market_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/market/data/datasources/market_remote_data_source_impl.dart';
 import 'package:crypto_tracker/features/market/data/repository/market_repository_impl.dart';
-import 'package:crypto_tracker/features/market/domain/models/cached_coins.dart';
-import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 import 'package:crypto_tracker/features/market/domain/repositories/i_market_repository.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
-import 'package:crypto_tracker/features/portfolio/domain/models/transaction_model.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/i_settings_local_data_source.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/settings_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
@@ -45,7 +43,7 @@ void main() async {
   Hive.registerAdapters();
 
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
-  final apiCacheBox = await Hive.openBox(CacheBoxNames.marketCache);
+  final marketCacheBox = await Hive.openBox(CacheBoxNames.marketCache);
 
   runApp(
     MultiProvider(
@@ -72,21 +70,35 @@ void main() async {
         //========================================================================
 
         // --- Feature: Settings ---
+        Provider<ICacheService<SettingsFeature>>(
+          create: (context) => HiveCacheService<SettingsFeature>(
+            settingsBox,
+            context.read<ILoggerService>(),
+          ),
+        ),
         Provider<ISettingsLocalDataSource>(
-          create: (_) =>
-              SettingsLocalDataSourceImpl(HiveCacheService(settingsBox)),
+          create: (context) => SettingsLocalDataSourceImpl(
+            context.read<ICacheService<SettingsFeature>>(),
+          ),
         ),
         ProxyProvider<ISettingsLocalDataSource, ISettingsRepository>(
           update: (_, ds, __) => SettingsRepositoryImpl(ds),
         ),
 
         // --- Feature: Market ---
+        Provider<ICacheService<MarketFeature>>(
+          create: (context) => HiveCacheService<MarketFeature>(
+            marketCacheBox,
+            context.read<ILoggerService>(),
+          ),
+        ),
         ProxyProvider<ApiClient, IMarketRemoteDataSource>(
           update: (_, apiClient, __) => MarketRemoteDataSourceImpl(apiClient),
         ),
         Provider<IMarketLocalDataSource>(
-          create: (_) =>
-              MarketLocalDataSourceImpl(HiveCacheService(apiCacheBox)),
+          create: (context) => MarketLocalDataSourceImpl(
+            context.read<ICacheService<MarketFeature>>(),
+          ),
         ),
         ProxyProvider3<
           IMarketRemoteDataSource,
