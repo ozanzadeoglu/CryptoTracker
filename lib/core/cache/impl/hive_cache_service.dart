@@ -27,18 +27,18 @@ class HiveCacheService<R> implements ICacheService<R> {
   @override
   Future<ApiResult<T?>> get<T>(String key) async {
     try {
-      _logger.logInfo("Attempting to GET '\$key' from cache", source: 'HiveCacheService');
+      _logger.logInfo("Attempting to GET '$key' from cache", source: 'HiveCacheService');
       final raw = await _box.get(key);
-      _logger.logInfo("Successfully GET '\$key' from cache", source: 'HiveCacheService');
+      _logger.logInfo("Successfully GET '$key' from cache", source: 'HiveCacheService');
       return ApiResult.success(raw as T?);
     } on HiveError catch (e, st) {
-      final msg = "Failed to GET '\$key' from Hive: \${e.message}";
+      final msg = "Failed to GET '$key' from Hive: \${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.cache(msg),
       );
     } catch (e, st) {
-      final msg = "Unknown error GET '\$key' from Hive: \$e";
+      final msg = "Unknown error GET '$key' from Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.unknown(msg),
@@ -54,18 +54,18 @@ class HiveCacheService<R> implements ICacheService<R> {
   @override
   Future<ApiResult<void>> put<T>(String key, T value) async {
     try {
-      _logger.logInfo("Attempting to PUT '\$key' into cache", source: 'HiveCacheService');
+      _logger.logInfo("Attempting to PUT '$key' into cache", source: 'HiveCacheService');
       await _box.put(key, value);
-      _logger.logInfo("Successfully PUT '\$key' into cache", source: 'HiveCacheService');
+      _logger.logInfo("Successfully PUT '$key' into cache", source: 'HiveCacheService');
       return const ApiResult.success(null);
     } on HiveError catch (e, st) {
-      final msg = "Failed to PUT '\$key' into Hive: \${e.message}";
+      final msg = "Failed to PUT '$key' into Hive: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.cache(msg),
       );
     } catch (e, st) {
-      final msg = "Unknown error PUT '\$key' into Hive: \$e";
+      final msg = "Unknown error PUT '$key' into Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.unknown(msg),
@@ -81,18 +81,18 @@ class HiveCacheService<R> implements ICacheService<R> {
   @override
   Future<ApiResult<void>> delete(String key) async {
     try {
-      _logger.logInfo("Attempting to DELETE '\$key' from cache", source: 'HiveCacheService');
+      _logger.logInfo("Attempting to DELETE '$key' from cache", source: 'HiveCacheService');
       await _box.delete(key);
-      _logger.logInfo("Successfully DELETE '\$key' from cache", source: 'HiveCacheService');
+      _logger.logInfo("Successfully DELETE '$key' from cache", source: 'HiveCacheService');
       return const ApiResult.success(null);
     } on HiveError catch (e, st) {
-      final msg = "Failed to DELETE '\$key' from Hive: \${e.message}";
+      final msg = "Failed to DELETE '$key' from Hive: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.cache(msg),
       );
     } catch (e, st) {
-      final msg = "Unknown error DELETE '\$key' from Hive: \$e";
+      final msg = "Unknown error DELETE '$key' from Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.unknown(msg),
@@ -113,13 +113,13 @@ class HiveCacheService<R> implements ICacheService<R> {
       _logger.logInfo("Successfully CLEARED cache", source: 'HiveCacheService');
       return const ApiResult.success(null);
     } on HiveError catch (e, st) {
-      final msg = "Failed to CLEAR Hive box: \${e.message}";
+      final msg = "Failed to CLEAR Hive box: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.cache(msg),
       );
     } catch (e, st) {
-      final msg = "Unknown error CLEAR Hive box: \$e";
+      final msg = "Unknown error CLEAR Hive box: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
         ApiFailure.unknown(msg),
