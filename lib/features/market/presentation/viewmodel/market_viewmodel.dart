@@ -26,7 +26,7 @@ enum MarketSortOption {
 extension MarketSortOptionLocalization on MarketSortOption {
   String localized(BuildContext context) {
     final loc = AppLocalizations.of(context)!;
-        switch (this) {
+    switch (this) {
       case MarketSortOption.marketCap:
         return loc.sortOptionsMarketCap;
       case MarketSortOption.gainers:
@@ -46,6 +46,8 @@ class MarketViewModel extends ChangeNotifier {
   final IConnectivityService _connectivityService;
   final ISettingsRepository _settingsRepository;
 
+  late final StreamSubscription<bool> _connectivitySub;
+
   MarketViewModel({
     required GetMarketCoinsUseCase getMarketCoinsUseCase,
     required SearchCoinsUseCase searchCoinsUseCase,
@@ -55,7 +57,9 @@ class MarketViewModel extends ChangeNotifier {
        _searchCoinsUseCase = searchCoinsUseCase,
        _connectivityService = connectivityService,
        _settingsRepository = settingsRepository {
-    _connectivityService.isOnlineStream.listen((_) => notifyListeners());
+    _connectivitySub = _connectivityService.isOnlineStream.listen(
+      (_) => notifyListeners(),
+    );
     fetchMarketCoins();
   }
 
@@ -78,8 +82,9 @@ class MarketViewModel extends ChangeNotifier {
 
   @override
   void dispose() {
+    _connectivitySub.cancel();
     _debounce?.cancel();
-    searchController.dispose(); // Dispose the controller here
+    searchController.dispose();
     super.dispose();
   }
 
@@ -141,7 +146,6 @@ class MarketViewModel extends ChangeNotifier {
     final currency = 'usd';
 
     final result = await _getMarketCoinsUseCase.execute(currency: currency);
-
     if (result is Success<List<Coin>>) {
       _coins = result.value;
       // Cache the main list if we are not in a search context

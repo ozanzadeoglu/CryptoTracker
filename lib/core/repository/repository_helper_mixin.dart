@@ -22,11 +22,6 @@ mixin RepositoryHelperMixin {
   }) async {
     if (connectivityService.isOnline) {
       final remoteResult = await remoteFetch();
-
-      // In the future, you could add generic "cache-on-success" logic here.
-      // For example, if the remote fetch was successful, you could call a
-      // `cacheOnSuccess` method before returning.
-
       return remoteResult;
     } else {
       return await localFetch();

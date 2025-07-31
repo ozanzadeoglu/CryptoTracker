@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:crypto_tracker/common/utils/number_utils.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
