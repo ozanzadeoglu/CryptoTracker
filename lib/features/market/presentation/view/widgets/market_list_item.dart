@@ -33,8 +33,14 @@ class _MarketListItem extends StatelessWidget {
         child: Row(
           children: [
             CircleAvatar(
-              backgroundImage: NetworkImage(coin.image),
               backgroundColor: theme.colorScheme.surface,
+              child: CachedNetworkImage(
+                fit: BoxFit.fill,
+                imageUrl: coin.image,
+                errorWidget: (context, url, error) {
+                  return const SizedBox.shrink();
+                },
+              ),
             ),
             const SizedBox(width: AppPaddings.sm),
             Expanded(
@@ -59,10 +65,7 @@ class _MarketListItem extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text(
-                    formattedPrice,
-                    style: theme.textTheme.titleMedium,
-                  ),
+                  Text(formattedPrice, style: theme.textTheme.titleMedium),
                   Text(
                     '${priceChange.toStringAsFixed(2)}%',
                     style: theme.textTheme.bodyMedium?.copyWith(
