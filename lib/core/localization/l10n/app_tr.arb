@@ -12,5 +12,11 @@
   "sortOptionsMarketCap": "Piyasa Değeri",
   "sortOptionsAlphabetic": "Alfabetik (A-Z)",
   "searchCoins": "Kripto para ara",
-  "noCoinsFound": "Hiç kripto para bulunamadı."
+  "noCoinsFound": "Hiç kripto para bulunamadı.",
+
+  "noNetworkConnection": "İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.",
+  "serverUnavailable": "Sunucu geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.",
+  "noOfflineSearch": "Arama özelliği internet bağlantısı gerektirir. Lütfen internete bağlanın ve tekrar deneyin.",
+  "cacheReadFailed": "Kaydedilen veriler yüklenemedi. Lütfen tekrar deneyin."
+
 }

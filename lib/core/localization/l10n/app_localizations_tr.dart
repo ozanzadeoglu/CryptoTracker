@@ -45,6 +45,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get noCoinsFound => 'Hiç kripto para bulunamadı.';
 
   @override
+  String get noNetworkConnection =>
+      'İnternet bağlantısı yok. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.';
+
+  @override
+  String get serverUnavailable =>
+      'Sunucu geçici olarak kullanılamıyor. Lütfen daha sonra tekrar deneyin.';
+
+  @override
+  String get cacheReadFailed =>
+      'Kaydedilen veriler yüklenemedi. Lütfen tekrar deneyin.';
+
+  @override
+  String get noOfflineSearch =>
+      'Arama özelliği internet bağlantısı gerektirir. Lütfen internete bağlanın ve tekrar deneyin.';
+
+  @override
   String hello(String userName) {
     return 'Merhaba, $userName!';
   }

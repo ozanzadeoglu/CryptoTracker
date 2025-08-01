@@ -1,23 +1,38 @@
 {
   "@@locale": "en",
-
   "appTitle": "TrackIt",
   "@appTitle": {
     "description": "Title of the app"
   },
-
   "market": "Market",
   "portfolio": "Portfolio",
   "settings": "Settings",
-  "errorMessage" : "An Error Occurred", 
-  "tryAgain" : "Try Again",
+  "errorMessage": "An Error Occurred",
+  "tryAgain": "Try Again",
   "sortOptionsGainers": "Gainers",
   "sortOptionsLosers": "Losers",
   "sortOptionsMarketCap": "Market Cap",
   "sortOptionsAlphabetic": "Name (A-Z)",
-  "searchCoins" : "Search coins",
-  "noCoinsFound" : "No coins found.",
-
+  "searchCoins": "Search coins",
+  "noCoinsFound": "No coins found.",
+  
+  "noNetworkConnection": "No internet connection. Please check your connection and try again.",
+  "@noNetworkConnection": {
+    "description": "Error message shown when the app cannot connect to the internet"
+  },
+  "serverUnavailable": "Server is temporarily unavailable. Please try again later.",
+  "@serverUnavailable": {
+    "description": "Error message shown when the API server is down or temporarily unavailable"
+  },
+  "cacheReadFailed": "Unable to load saved data. Please try again.",
+  "@cacheReadFailed": {
+    "description": "Error message shown when local data storage (Hive) fails to read data"
+  },
+  "noOfflineSearch": "Search requires internet connection. Please connect to the internet and try again.",
+  "@noOfflineSearch": {
+    "description": "Error message shown when user tries to make search on market feature while offline"
+  },
+  
   "hello": "Hello, {userName}!",
   "@hello": {
     "description": "Test greeting",

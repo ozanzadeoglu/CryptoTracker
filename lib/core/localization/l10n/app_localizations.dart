@@ -170,6 +170,30 @@ abstract class AppLocalizations {
   /// **'No coins found.'**
   String get noCoinsFound;
 
+  /// Error message shown when the app cannot connect to the internet
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection. Please check your connection and try again.'**
+  String get noNetworkConnection;
+
+  /// Error message shown when the API server is down or temporarily unavailable
+  ///
+  /// In en, this message translates to:
+  /// **'Server is temporarily unavailable. Please try again later.'**
+  String get serverUnavailable;
+
+  /// Error message shown when local data storage (Hive) fails to read data
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load saved data. Please try again.'**
+  String get cacheReadFailed;
+
+  /// Error message shown when user tries to make search on market feature while offline
+  ///
+  /// In en, this message translates to:
+  /// **'Search requires internet connection. Please connect to the internet and try again.'**
+  String get noOfflineSearch;
+
   /// Test greeting
   ///
   /// In en, this message translates to:

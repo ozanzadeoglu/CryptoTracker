@@ -45,6 +45,21 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noCoinsFound => 'No coins found.';
 
   @override
+  String get noNetworkConnection =>
+      'No internet connection. Please check your connection and try again.';
+
+  @override
+  String get serverUnavailable =>
+      'Server is temporarily unavailable. Please try again later.';
+
+  @override
+  String get cacheReadFailed => 'Unable to load saved data. Please try again.';
+
+  @override
+  String get noOfflineSearch =>
+      'Search requires internet connection. Please connect to the internet and try again.';
+
+  @override
   String hello(String userName) {
     return 'Hello, $userName!';
   }
