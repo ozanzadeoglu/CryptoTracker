@@ -1,19 +1,27 @@
 import 'package:crypto_tracker/core/network/api_client.dart';
 import 'package:crypto_tracker/core/network/api_endpoints.dart';
-import 'package:crypto_tracker/core/network/api_failure.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
+import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_data_source.dart';
 
 /// An implementation of [IMarketRemoteDataSource] that uses the [ApiClient].
 class MarketRemoteDataSourceImpl implements IMarketRemoteDataSource {
   final ApiClient _apiClient;
+  final ILoggerService _logger;
 
-  MarketRemoteDataSourceImpl(this._apiClient);
+  MarketRemoteDataSourceImpl(this._apiClient, this._logger);
 
   @override
-  Future<ApiResult<List<Coin>>> getMarketCoins({required String currency}) {
-    return _apiClient.get(
+  Future<ApiResult<List<Coin>>> getMarketCoins({
+    required String currency,
+  }) async {
+    // TODO: Revise logs when changing currency feature and pagination is added to app,
+    _logger.logInfo(
+      ".getMarketCoins: Attempting to fetch market coins, fiat currency: $currency",
+      source: "MarketRemoteDataSourceImpl",
+    );
+    final result = await _apiClient.get(
       path: ApiEndpoints.marketCoins(vsCurrency: currency, perPage: 100),
       fromJson: (json) {
         final coinList = json as List<dynamic>;
@@ -22,6 +30,23 @@ class MarketRemoteDataSourceImpl implements IMarketRemoteDataSource {
             .toList();
       },
     );
+
+    switch (result) {
+      case Success<List<Coin>>():
+        _logger.logInfo(
+          ".getMarketCoins: Successfully fetched market coins",
+          source: "MarketRemoteDataSourceImpl",
+        );
+        return result;
+
+      case Failure<List<Coin>>(failure: final apiFailure):
+        _logger.logError(
+          ".getMarketCoins: Failed to fetch market coins, error type: ${apiFailure.runtimeType}",
+          source: "MarketRemoteDataSourceImpl",
+        );
+        return ApiResult.failure(apiFailure);
+    }
+    
   }
 
   /// The CoinGecko `/search` endpoint returns a simplified model. To provide a
@@ -32,6 +57,11 @@ class MarketRemoteDataSourceImpl implements IMarketRemoteDataSource {
   /// app can simply call `searchCoins` and get a full `List<Coin>`.
   @override
   Future<ApiResult<List<Coin>>> searchCoins(String query) async {
+    _logger.logInfo(
+      ".searchCoins: Starting search for query: '$query'",
+      source: "MarketRemoteDataSourceImpl",
+    );
+
     // Step 1: Search for the coin IDs
     final idResult = await _apiClient.get(
       path: ApiEndpoints.search(query),
@@ -42,24 +72,50 @@ class MarketRemoteDataSourceImpl implements IMarketRemoteDataSource {
             .toList();
       },
     );
-    // Handle the result of the first API call
-    if (idResult is Success<List<String>>) {
-      final ids = idResult.value;
-      if (ids.isEmpty) {
-        // If the search returns no results, return an empty success list.
-        return const ApiResult.success([]);
-      }
-      // Step 2: Fetch the full coin data for the retrieved IDs
-      return _fetchCoinsByIds(ids);
-    } else if (idResult is Failure<List<String>>) {
-      // If the initial search for IDs fails, propagate the failure.
-      return ApiResult.failure(idResult.failure);
-    }
 
-    // This case should not be reachable, but is a safety net.
-    return const ApiResult.failure(
-      ApiFailure.unknown("An unexpected error occurred during search."),
-    );
+    // Handle the result of the first API call
+    switch (idResult) {
+      case Success<List<String>>(value: final ids):
+        if (ids.isEmpty) {
+          _logger.logInfo(
+            ".searchCoins: No search results found for query: '$query'",
+            source: "MarketRemoteDataSourceImpl",
+          );
+          // If the search returns no results, return list.
+          return const ApiResult.success([]);
+        }
+
+        _logger.logInfo(
+          ".searchCoins: Found ${ids.length} coin IDs for query: '$query', fetching full coin data",
+          source: "MarketRemoteDataSourceImpl",
+        );
+
+        // Step 2: Fetch the full coin data for the retrieved IDs
+        final coinResult = await _fetchCoinsByIds(ids);
+
+        switch (coinResult) {
+          case Success<List<Coin>>(value: final coins):
+            _logger.logInfo(
+              ".searchCoins: Successfully fetched ${coins.length} full coin records for query: '$query'",
+              source: "MarketRemoteDataSourceImpl",
+            );
+            return coinResult;
+
+          case Failure<List<Coin>>(failure: final apiFailure):
+            _logger.logError(
+              ".searchCoins: Failed to fetch full coin data for query: '$query', error type: ${apiFailure.runtimeType}",
+              source: "MarketRemoteDataSourceImpl",
+            );
+            return coinResult;
+        }
+
+      case Failure<List<String>>(failure: final apiFailure):
+        _logger.logError(
+          ".searchCoins: Failed to search for query: '$query', error type: ${apiFailure.runtimeType}",
+          source: "MarketRemoteDataSourceImpl",
+        );
+        return ApiResult.failure(apiFailure);
+    }
   }
 
   /// A private helper method to fetch full coin data for a list of IDs.
@@ -73,7 +129,6 @@ class MarketRemoteDataSourceImpl implements IMarketRemoteDataSource {
         // Filter out any entries missing required JSON keys
         final filteredCoinList = coinList.where((e) {
           final map = e as Map<String, dynamic>;
-
           return map['id'] != null &&
               map['symbol'] != null &&
               map['name'] != null &&
