@@ -86,30 +86,42 @@ void main() async {
         ),
 
         // --- Feature: Market ---
+
+        // Cache service with the marketCacheBox
         Provider<ICacheService<MarketFeature>>(
           create: (context) => HiveCacheService<MarketFeature>(
             marketCacheBox,
             context.read<ILoggerService>(),
           ),
         ),
-        ProxyProvider<ApiClient, IMarketRemoteDataSource>(
-          update: (_, apiClient, __) => MarketRemoteDataSourceImpl(apiClient),
+        // Remote data source of market feature, used in MarketRepository
+        Provider<IMarketRemoteDataSource>(
+          create: (context) => MarketRemoteDataSourceImpl(
+            context.read<ApiClient>(),
+            context.read<ILoggerService>(),
+          ),
         ),
+
+        // Local data source of market feature, used in MarketRepository
         Provider<IMarketLocalDataSource>(
           create: (context) => MarketLocalDataSourceImpl(
             context.read<ICacheService<MarketFeature>>(),
+            context.read<ILoggerService>(),
           ),
         ),
-        ProxyProvider3<
+        // Market Repository, takes everything as dependency.
+        ProxyProvider4<
           IMarketRemoteDataSource,
           IMarketLocalDataSource,
           IConnectivityService,
+          ILoggerService,
           IMarketRepository
         >(
-          update: (_, remote, local, connectivity, __) => MarketRepositoryImpl(
+          update: (_, remote, local, connectivity, logger,__) => MarketRepositoryImpl(
             remoteDataSource: remote,
             localDataSource: local,
             connectivityService: connectivity,
+            loggerService: logger,
           ),
         ),
 
