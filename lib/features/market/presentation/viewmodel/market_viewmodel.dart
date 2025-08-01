@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:crypto_tracker/core/errors/app_errors.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
@@ -66,14 +67,14 @@ class MarketViewModel extends ChangeNotifier {
   // --- STATE PROPERTIES ---
   bool _isLoading = false;
   List<Coin> _coins = [];
-  String? _errorMessage;
+  AppError? _error;
   MarketSortOption _currentSortOption = MarketSortOption.marketCap;
   List<Coin> _marketListCache = []; // In-memory cache for the main market list
   bool _isSearchActive = false;
 
   bool get isLoading => _isLoading;
   List<Coin> get coins => _coins;
-  String? get errorMessage => _errorMessage;
+  AppError? get error => _error;
   MarketSortOption get currentSortOption => _currentSortOption;
   final TextEditingController searchController = TextEditingController();
   bool get isSearchActive => _isSearchActive;
@@ -113,7 +114,7 @@ class MarketViewModel extends ChangeNotifier {
       // Restore from cache if the query is cleared
       if (_marketListCache.isNotEmpty) {
         _coins = _marketListCache;
-        _errorMessage = null;
+        _error = null;
         notifyListeners();
       } else {
         // If the cache is empty for some reason, fetch the main list
@@ -139,7 +140,7 @@ class MarketViewModel extends ChangeNotifier {
   Future<void> fetchMarketCoins({bool isRefresh = false}) async {
     if (!isRefresh) {
       _isLoading = true;
-      _errorMessage = null;
+      _error = null;
       notifyListeners();
     }
 
@@ -154,7 +155,7 @@ class MarketViewModel extends ChangeNotifier {
       }
     } else if (result is Failure<List<Coin>>) {
       _coins = [];
-      _errorMessage = result.failure.message;
+      _error = result.failure.error;
     }
     // Incase user refreshes the page when there's a sort option selected.
     _sortCoinsByOption(_currentSortOption);
@@ -195,7 +196,7 @@ class MarketViewModel extends ChangeNotifier {
   Future<void> _performSearch(String query, {bool isRefresh = false}) async {
     if (!isRefresh) {
       _isLoading = true;
-      _errorMessage = null;
+      _error = null;
       notifyListeners();
     }
 
@@ -206,7 +207,7 @@ class MarketViewModel extends ChangeNotifier {
       _coins = result.value;
     } else if (result is Failure<List<Coin>>) {
       _coins = [];
-      _errorMessage = result.failure.message;
+      _error = result.failure.error;
     }
     _isLoading = false;
     notifyListeners();

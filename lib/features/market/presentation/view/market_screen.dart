@@ -78,9 +78,9 @@ class _Body extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    if (viewModel.errorMessage != null) {
+    if (viewModel.error != null) {
       return ErrorDisplay(
-        message: viewModel.errorMessage!,
+        error: viewModel.error!,
         onRetry: viewModel.refresh,
       );
     }
