@@ -1,9 +1,12 @@
 import "package:crypto_tracker/core/config/api_keys.dart";
+import "package:crypto_tracker/core/errors/app_errors.dart";
 import "package:crypto_tracker/core/network/api_failure.dart";
 import "package:crypto_tracker/core/network/api_result.dart";
 import "package:crypto_tracker/core/services/logging/logger_service.dart";
 import "package:dio/dio.dart";
 
+
+/// Gateway to all remote API's.
 class ApiClient {
   final Dio _dio;
   final ILoggerService _logger;
@@ -49,68 +52,82 @@ class ApiClient {
         stackTrace: stackTrace,
         source: "ApiClient",
       );
-      return ApiResult.failure(
-        const ApiFailure.unknown("An unexpected error occurred..."),
-      );
+      return ApiResult.failure(const ApiFailure.unknown());
     }
   }
 
   /// Converts a [DioException] into a structured, typed [ApiFailure].
   ApiFailure _handleDioException(DioException e) {
-    _logger.logWarning(
-      "DioException caught",
-      error: e,
-      source: "ApiClient",
-    );
+    final uri = e.requestOptions.uri.toString();
+    _logger.logWarning("DioException caught", error: e, source: "ApiClient");
     switch (e.type) {
       case DioExceptionType.connectionTimeout:
       case DioExceptionType.sendTimeout:
       case DioExceptionType.receiveTimeout:
       case DioExceptionType.connectionError:
-        return const ApiFailure.network(
-          "Connection error. Please check your internet connection and try again.",
+        _logger.logError(
+          "Network timeout/error on $uri: ${e.message}",
+          source: "ApiClient",
         );
+        return const ApiFailure.network(AppError.noNetworkConnection);
 
-      // This case represents a response from the server, but with a status code
-      // that indicates an error (e.g., 4xx or 5xx).
       case DioExceptionType.badResponse:
         final statusCode = e.response?.statusCode;
-        String serverMessage = "An unexpected server error occurred.";
+        final rawBody = e.response?.data;
+        String serverMsg = "HTTP $statusCode";
 
-        if (e.response?.data is Map<String, dynamic>) {
-          serverMessage = e.response!.data["error"] ?? serverMessage;
+        // extract error message
+        if (rawBody is Map<String, dynamic> && rawBody.containsKey("error")) {
+          serverMsg = rawBody["error"];
         }
 
+        // 404
         if (statusCode == 404) {
-          return ApiFailure.notFound(serverMessage);
+          _logger.logError("404 Not Found at $uri", source: "ApiClient");
+          return const ApiFailure.notFound(AppError.serverUnavailable);
         }
 
+        // auth errors, may caused because of an unvalid api key
         if (statusCode == 401 || statusCode == 403) {
-          return ApiFailure.server(
-            message: "Unauthorized: $serverMessage",
-            statusCode: statusCode,
+          _logger.logError(
+            "Unauthorized ($statusCode) on $uri: $serverMsg",
+            source: "ApiClient",
           );
+          return ApiFailure.server(statusCode: statusCode);
         }
+
+        // server‐side (5xx)
         if (statusCode != null && statusCode >= 500) {
+          _logger.logError(
+            "Server error ($statusCode) on $uri: $serverMsg",
+            source: "ApiClient",
+          );
           return ApiFailure.server(
-            message: "Server unavailable: $serverMessage",
+            error: AppError.serverUnavailable,
             statusCode: statusCode,
           );
         }
 
-        return ApiFailure.server(
-          message: serverMessage,
-          statusCode: statusCode,
+        // all other HTTP errors (4xx)
+        _logger.logError(
+          "Client error ($statusCode) on $uri: $serverMsg",
+          source: "ApiClient",
         );
 
+        return ApiFailure.server(statusCode: statusCode);
+
       case DioExceptionType.cancel:
-        return const ApiFailure.unknown("Request was cancelled.");
+        _logger.logInfo("Request to $uri was cancelled", source: "ApiClient");
+        return const ApiFailure.unknown();
 
       case DioExceptionType.unknown:
       default:
-        return ApiFailure.unknown(
-          "An unknown network error occurred: ${e.message}",
+        _logger.logError(
+          "Unknown network error on $uri: ${e.message}",
+          error: e,
+          source: "ApiClient",
         );
+        return const ApiFailure.unknown();
     }
   }
 }

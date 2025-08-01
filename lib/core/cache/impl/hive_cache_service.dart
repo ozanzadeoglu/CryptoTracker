@@ -4,6 +4,8 @@ import 'package:crypto_tracker/core/cache/i_cache_service.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
+/// Gateway to local storage. 
+/// 
 /// An implementation of [ICacheService] that uses a Hive [Box] for storage,
 /// wrapping results in [ApiResult] to standardize success/failure handling.
 ///
@@ -32,16 +34,16 @@ class HiveCacheService<R> implements ICacheService<R> {
       _logger.logInfo("Successfully GET '$key' from cache", source: 'HiveCacheService');
       return ApiResult.success(raw as T?);
     } on HiveError catch (e, st) {
-      final msg = "Failed to GET '$key' from Hive: \${e.message}";
+      final msg = "Failed to GET '$key' from Hive: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
-        ApiFailure.cache(msg),
+        const ApiFailure.cache(),
       );
     } catch (e, st) {
       final msg = "Unknown error GET '$key' from Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
       return ApiResult.failure(
-        ApiFailure.unknown(msg),
+        const ApiFailure.unknown(),
       );
     }
   }
@@ -61,14 +63,14 @@ class HiveCacheService<R> implements ICacheService<R> {
     } on HiveError catch (e, st) {
       final msg = "Failed to PUT '$key' into Hive: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.cache(msg),
+      return const ApiResult.failure(
+        ApiFailure.cache(),
       );
     } catch (e, st) {
       final msg = "Unknown error PUT '$key' into Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.unknown(msg),
+      return const ApiResult.failure(
+        ApiFailure.unknown(),
       );
     }
   }
@@ -88,14 +90,14 @@ class HiveCacheService<R> implements ICacheService<R> {
     } on HiveError catch (e, st) {
       final msg = "Failed to DELETE '$key' from Hive: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.cache(msg),
+      return const ApiResult.failure(
+        ApiFailure.cache(),
       );
     } catch (e, st) {
       final msg = "Unknown error DELETE '$key' from Hive: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.unknown(msg),
+      return const ApiResult.failure(
+        ApiFailure.unknown(),
       );
     }
   }
@@ -115,14 +117,14 @@ class HiveCacheService<R> implements ICacheService<R> {
     } on HiveError catch (e, st) {
       final msg = "Failed to CLEAR Hive box: ${e.message}";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.cache(msg),
+      return const ApiResult.failure(
+        ApiFailure.cache(),
       );
     } catch (e, st) {
       final msg = "Unknown error CLEAR Hive box: $e";
       _logger.logError(msg, error: e, stackTrace: st, source: 'HiveCacheService');
-      return ApiResult.failure(
-        ApiFailure.unknown(msg),
+      return const ApiResult.failure(
+        ApiFailure.unknown(),
       );
     }
   }
