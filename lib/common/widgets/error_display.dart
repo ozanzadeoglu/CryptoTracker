@@ -1,15 +1,16 @@
 // lib/common/widgets/error_display.dart
+import 'package:crypto_tracker/core/errors/app_errors.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 /// A reusable widget to display a centered error message with an optional retry button.
 class ErrorDisplay extends StatelessWidget {
-  final String message;
+  final AppError error;
   final VoidCallback? onRetry;
 
   const ErrorDisplay({
     super.key,
-    required this.message,
+    required this.error,
     this.onRetry,
   });
 
@@ -35,7 +36,7 @@ class ErrorDisplay extends StatelessWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              message,
+              error.localized(context),
               style: theme.textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),
