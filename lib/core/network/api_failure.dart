@@ -1,42 +1,44 @@
 
+import 'package:crypto_tracker/core/errors/app_errors.dart';
+
 /// A sealed class representing all possible API failures.
 sealed class ApiFailure {
-  final String message;
-  const ApiFailure(this.message);
+  final AppError? error;
+  const ApiFailure(this.error);
 
   /// Factory constructor for network connectivity issues.
-  const factory ApiFailure.network([String message]) = NetworkFailure._;
+  const factory ApiFailure.network([AppError? error]) = NetworkFailure._;
 
   /// Factory for server errors (e.g., 500 Internal Server Error).
-  const factory ApiFailure.server({String message, int? statusCode}) = ServerFailure._;
+  const factory ApiFailure.server({AppError? error, int? statusCode}) = ServerFailure._;
   
   /// Factory for "Not Found" errors (e.g., 404).
-  const factory ApiFailure.notFound([String message]) = NotFoundFailure._;
+  const factory ApiFailure.notFound([AppError? error]) = NotFoundFailure._;
 
   /// Factory for other, unexpected errors.
-  const factory ApiFailure.unknown([String message]) = UnknownFailure._;
+  const factory ApiFailure.unknown([AppError? error]) = UnknownFailure._;
 
   /// Factory for cache errors.
-  const factory ApiFailure.cache([String message]) = CacheFailure._;
+  const factory ApiFailure.cache([AppError? error]) = CacheFailure._;
 }
 
 final class NetworkFailure extends ApiFailure {
-  const NetworkFailure._([super.message = "Network error occurred."]);
+  const NetworkFailure._([super.error]);
 }
 
 final class ServerFailure extends ApiFailure {
   final int? statusCode;
-  const ServerFailure._({String message = "Server error occurred.", this.statusCode}) : super(message);
+  const ServerFailure._({AppError? error, this.statusCode}) : super(error);
 }
 
 final class NotFoundFailure extends ApiFailure {
-  const NotFoundFailure._([super.message = "Resource not found."]);
+  const NotFoundFailure._([super.error]);
 }
 
 final class UnknownFailure extends ApiFailure {
-  const UnknownFailure._([super.message = "An unknown error occurred."]);
+  const UnknownFailure._([super.error]);
 }
 
 final class CacheFailure extends ApiFailure {
-  const CacheFailure._([super.message = "A cache error occured."]);
+  const CacheFailure._([super.error]);
 }
