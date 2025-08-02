@@ -26,11 +26,14 @@ import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_
 import 'package:crypto_tracker/hive_registrar.g.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 import 'package:provider/provider.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   // --- CONNECTIVITY INITIALIZATION ---
   final connectivityService = ConnectivityServiceImpl();
@@ -117,12 +120,13 @@ void main() async {
           ILoggerService,
           IMarketRepository
         >(
-          update: (_, remote, local, connectivity, logger,__) => MarketRepositoryImpl(
-            remoteDataSource: remote,
-            localDataSource: local,
-            connectivityService: connectivity,
-            loggerService: logger,
-          ),
+          update: (_, remote, local, connectivity, logger, __) =>
+              MarketRepositoryImpl(
+                remoteDataSource: remote,
+                localDataSource: local,
+                connectivityService: connectivity,
+                loggerService: logger,
+              ),
         ),
 
         // UseCases
@@ -148,6 +152,7 @@ void main() async {
       child: const CryptoTrackerState(),
     ),
   );
+  FlutterNativeSplash.remove();
 }
 
 class CryptoTrackerState extends StatelessWidget {
