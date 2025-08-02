@@ -8,7 +8,7 @@ class ConnectivityServiceImpl implements IConnectivityService {
   final Connectivity _connectivity = Connectivity();
   final _controller = StreamController<bool>.broadcast();
 
-  bool _isOnline = true; // Assume online by default until the first check.
+  bool _isOnline = false; // Assume offline by default until the first check.
 
   @override
   Stream<bool> get isOnlineStream => _controller.stream;
@@ -24,20 +24,18 @@ class ConnectivityServiceImpl implements IConnectivityService {
   @override
   Future<void> initialize() async {
     final result = await _connectivity.checkConnectivity();
-    _updateConnectionStatus(result);
+    await _updateConnectionStatus(result);
   }
 
-  void _updateConnectionStatus(List<ConnectivityResult> result) async {
+  Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
     // TODO: Check which conditions this method is fired, may need to listen AppLifeCycle
     final hasConnection =
         result.contains(ConnectivityResult.mobile) ||
         result.contains(ConnectivityResult.wifi);
-
     // If device is connected to mobile or wifi, it's double checked with _checkInternetConnectivity method.
     final newIsOnline = hasConnection
         ? await _checkInternetConnectivity()
         : false;
-
     // Only emit a new value if the connectivity status has actually changed.
     if (newIsOnline != _isOnline) {
       _isOnline = newIsOnline;
