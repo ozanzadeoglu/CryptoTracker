@@ -1,4 +1,3 @@
-import "package:crypto_tracker/core/config/api_keys.dart";
 import "package:crypto_tracker/core/errors/app_errors.dart";
 import "package:crypto_tracker/core/network/api_failure.dart";
 import "package:crypto_tracker/core/network/api_result.dart";
@@ -11,23 +10,7 @@ class ApiClient {
   final Dio _dio;
   final ILoggerService _logger;
 
-  static const _baseUrl = "https://api.coingecko.com/api/v3/";
-  static const _headerApiKey = "x-cg-demo-api-key";
-  static const _headerContentType = "Content-Type";
-  static const _contentTypeJson = "application/json";
-
-  ApiClient(this._logger)
-    : _dio = Dio(
-        BaseOptions(
-          baseUrl: _baseUrl,
-          headers: {
-            _headerApiKey: ApiKeys.coingeckoApiKey,
-            _headerContentType: _contentTypeJson,
-          },
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 15),
-        ),
-      );
+  ApiClient(this._logger, this._dio);
 
   /// Generic GET method to handle all GET requests.
   /// It returns an [ApiResult<T>] which is either an [ApiResult.success] or an [ApiResult.failure].
