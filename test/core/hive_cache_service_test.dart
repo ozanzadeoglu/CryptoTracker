@@ -146,4 +146,304 @@ void main() {
       },
     );
   });
+
+  group("HiveCacheService.put", () {
+    final String testKey = "testKey";
+    final int testCache = 5;
+
+    test(
+      "Should succesfully return ApiResult<void>, and do the logging",
+      () async {
+        // ARRANGE
+        when(() => mockBox.put(testKey, testCache)).thenAnswer((_) async => {});
+
+        // ACT
+        final result = await hiveCacheService.put<int>(testKey, testCache);
+
+        // Assert
+        expect(result, const ApiResult<void>.success(null));
+
+        verify(() => mockBox.put(testKey, testCache)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to PUT")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Successfully PUT")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On HiveError case, should return cache failure for HiveError and do the logging",
+      () async {
+        // ARRANGE
+        final response = HiveError("A hive error occured");
+        when(() => mockBox.put(testKey, testCache)).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.put<int>(testKey, testCache);
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.cache()));
+
+        verify(() => mockBox.put(testKey, testCache)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to PUT")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Failed to PUT")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On exception case, should return unknown failure for any exception and do the logging",
+      () async {
+        // ARRANGE
+        final response = Exception("An exception occured");
+        when(() => mockBox.put(testKey, testCache)).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.put<int>(testKey, testCache);
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.unknown()));
+
+        verify(() => mockBox.put(testKey, testCache)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to PUT")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Unknown error PUT")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+  });
+
+  group("HiveCacheService.delete", () {
+    final String testKey = "testKey";
+
+    test(
+      "Should succesfully return ApiResult<void>, and do the logging",
+      () async {
+        // ARRANGE
+        when(() => mockBox.delete(testKey)).thenAnswer((_) async => {});
+
+        // ACT
+        final result = await hiveCacheService.delete(testKey);
+
+        // Assert
+        expect(result, const ApiResult<void>.success(null));
+
+        verify(() => mockBox.delete(testKey)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to DELETE")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Successfully DELETE")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On HiveError case, should return cache failure for HiveError and do the logging",
+      () async {
+        // ARRANGE
+        final response = HiveError("A hive error occured");
+        when(() => mockBox.delete(testKey)).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.delete(testKey);
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.cache()));
+
+        verify(() => mockBox.delete(testKey)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to DELETE")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Failed to DELETE")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On exception case, should return unknown failure for any exception and do the logging",
+      () async {
+        // ARRANGE
+        final response = Exception("An exception occured");
+        when(() => mockBox.delete(testKey)).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.delete(testKey);
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.unknown()));
+
+        verify(() => mockBox.delete(testKey)).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to DELETE")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Unknown error DELETE")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+  });
+
+    group("HiveCacheService.clear", () {
+
+    test(
+      "Should succesfully return ApiResult<void>, and do the logging",
+      () async {
+        // ARRANGE
+        when(() => mockBox.clear()).thenAnswer((_) async => 1);
+
+        // ACT
+        final result = await hiveCacheService.clear();
+
+        // Assert
+        expect(result, const ApiResult<void>.success(null));
+
+        verify(() => mockBox.clear()).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to CLEAR")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Successfully CLEARED")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On HiveError case, should return cache failure for HiveError and do the logging",
+      () async {
+        // ARRANGE
+        final response = HiveError("A hive error occured");
+        when(() => mockBox.clear()).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.clear();
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.cache()));
+
+        verify(() => mockBox.clear()).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to CLEAR")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Failed to CLEAR")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+
+    test(
+      "On exception case, should return unknown failure for any exception and do the logging",
+      () async {
+        // ARRANGE
+        final response = Exception("An exception occured");
+        when(() => mockBox.clear()).thenThrow(response);
+
+        // ACT
+        final result = await hiveCacheService.clear();
+
+        // Assert
+        expect(result, const ApiResult<void>.failure(ApiFailure.unknown()));
+
+        verify(() => mockBox.clear()).called(1);
+
+        verify(
+          () => mockLogger.logInfo(
+            any(that: contains("Attempting to CLEAR")),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+
+        verify(
+          () => mockLogger.logError(
+            any(that: contains("Unknown error CLEAR")),
+            error: response,
+            stackTrace: any(named: 'stackTrace'),
+            source: 'HiveCacheService',
+          ),
+        ).called(1);
+      },
+    );
+  });
 }
