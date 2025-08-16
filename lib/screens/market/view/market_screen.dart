@@ -4,7 +4,7 @@ import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
-import 'package:crypto_tracker/features/market/presentation/viewmodel/market_viewmodel.dart';
+import 'package:crypto_tracker/screens/market/viewmodel/market_viewmodel.dart';
 import 'package:crypto_tracker/common/widgets/error_display.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
 import 'package:crypto_tracker/common/utils/app_paddings.dart';
