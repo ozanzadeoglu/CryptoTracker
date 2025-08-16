@@ -20,7 +20,11 @@ const Map<String, String> _currencySymbols = {
 /// - [value]: The number to format.
 /// - [currencyCode]: The ISO 4217 currency code (e.g., 'USD').
 /// - [locale]: The locale string for formatting (e.g., 'en_US', 'tr_TR').
-String formatCurrency({required num value,required String currencyCode,required String locale}) {
+String formatCurrency({
+  required num value,
+  required String currencyCode,
+  required String locale,
+}) {
   //  Resolve the currency symbol from map, falling back to the code.
   final String currencySymbol = _currencySymbols[currencyCode] ?? currencyCode;
 
@@ -49,9 +53,52 @@ String formatCurrency({required num value,required String currencyCode,required 
 
   final formatter = NumberFormat.currency(
     locale: locale,
-    symbol: currencySymbol, 
+    symbol: currencySymbol,
     decimalDigits: decimalDigits,
   );
 
   return formatter.format(value);
+}
+
+/// Formats a number and disassembles it into three parts for rich text styling.
+///
+/// Takes a raw numeric [value] and returns a list of 3 strings:
+/// - `[0]`: The currency symbol (e.g., "₺").
+/// - `[1]`: The integer part plus the decimal separator (e.g., "29.376").
+/// - `[2]`: The decimal digits (e.g., ",33").
+List<String> formatAndDisassembleCurrency({
+  required num value,
+  required String currencyCode,
+  required String locale,
+}) {
+  final String formattedString = formatCurrency(
+    value: value,
+    currencyCode: currencyCode,
+    locale: locale,
+  );
+
+  String symbolPart = '';
+  String integerPart = '';
+  String decimalPart = '';
+
+  final String currencySymbol = _currencySymbols[currencyCode] ?? currencyCode;
+  final String decimalSeparator = NumberFormat.decimalPattern(
+    locale,
+  ).symbols.DECIMAL_SEP;
+
+  if (formattedString.startsWith(currencySymbol)) {
+    symbolPart = currencySymbol;
+    final numberString = formattedString.substring(symbolPart.length);
+    final parts = numberString.split(decimalSeparator);
+    integerPart = parts[0];
+
+    if (parts.length > 1) {
+      decimalPart = '$decimalSeparator${parts[1]}';
+    } 
+
+  } else {
+    integerPart = formattedString;
+  }
+
+  return [symbolPart, integerPart, decimalPart];
 }
