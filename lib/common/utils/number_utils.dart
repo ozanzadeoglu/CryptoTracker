@@ -34,9 +34,6 @@ String formatCurrency({required num value,required String currencyCode,required 
   }
   // For small prices, calculate decimal places dynamically.
   else {
-    // This formula calculates the number of leading zeros and adds 3.
-    // log() in Dart is the natural logarithm (ln), so we divide by ln10
-    // to get the base-10 logarithm.
     final double log10Value = log(value.abs()) / ln10;
     final int leadingZeros = log10Value.floor().abs();
     decimalDigits = leadingZeros + 2;
@@ -48,10 +45,9 @@ String formatCurrency({required num value,required String currencyCode,required 
     }
   }
 
-  // 2. Create the formatter using the resolved symbol and calculated decimals.
   final formatter = NumberFormat.currency(
     locale: locale,
-    symbol: currencySymbol, // Use 'symbol' instead of 'name'
+    symbol: currencySymbol, 
     decimalDigits: decimalDigits,
   );
 

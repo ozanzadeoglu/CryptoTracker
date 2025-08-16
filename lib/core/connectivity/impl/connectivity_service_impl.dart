@@ -32,6 +32,7 @@ class ConnectivityServiceImpl implements IConnectivityService {
     final hasConnection =
         result.contains(ConnectivityResult.mobile) ||
         result.contains(ConnectivityResult.wifi);
+
     // If device is connected to mobile or wifi, it's double checked with _checkInternetConnectivity method.
     final newIsOnline = hasConnection
         ? await _checkInternetConnectivity()
@@ -43,7 +44,7 @@ class ConnectivityServiceImpl implements IConnectivityService {
     }
   }
 
-  // Performs an actual internet connectivity check using HTTP request.
+  /// Performs an actual internet connectivity check using HTTP request.
   Future<bool> _checkInternetConnectivity() async {
     try {
       final response = await http
