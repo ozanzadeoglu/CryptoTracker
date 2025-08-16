@@ -28,20 +28,18 @@ class MarketScreen extends StatelessWidget {
       appBar: AppBar(
         title: viewModel.isSearchActive
             ? TextField(
-                controller:
-                    viewModel.searchController, 
+                controller: viewModel.searchController,
                 autofocus: true,
                 decoration: InputDecoration(
                   hintText: AppLocalizations.of(context)!.searchCoins,
                   border: InputBorder.none,
                 ),
-                onChanged:
-                    viewModel.onSearchQueryChanged,
+                onChanged: viewModel.onSearchQueryChanged,
               )
-            : Text(AppLocalizations.of(context)!.market), 
+            : Text(AppLocalizations.of(context)!.market),
         actions: [
           IconButton(
-            onPressed: viewModel.toggleSearch, 
+            onPressed: viewModel.toggleSearch,
             icon: Icon(viewModel.isSearchActive ? Icons.close : Icons.search),
           ),
           if (!viewModel.isSearchActive)
@@ -51,10 +49,7 @@ class MarketScreen extends StatelessWidget {
             ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: viewModel.refresh, 
-        child: _Body(),
-      ),
+      body: RefreshIndicator(onRefresh: viewModel.refresh, child: _Body()),
     );
   }
 
@@ -79,10 +74,7 @@ class _Body extends StatelessWidget {
     }
 
     if (viewModel.error != null) {
-      return ErrorDisplay(
-        error: viewModel.error!,
-        onRetry: viewModel.refresh,
-      );
+      return ErrorDisplay(error: viewModel.error!, onRetry: viewModel.refresh);
     }
 
     if (viewModel.coins.isEmpty && !viewModel.isLoading) {
@@ -96,10 +88,12 @@ class _Body extends StatelessWidget {
       itemCount: viewModel.coins.length,
       itemBuilder: (context, index) {
         final coin = viewModel.coins[index];
-        return _MarketListItem(coin: coin, onTap: () {});
+        return _MarketListItem(
+          coin: coin,
+          onTap: () {},
+          prefferedFiat: viewModel.preferredFiat,
+        );
       },
     );
   }
 }
-
-

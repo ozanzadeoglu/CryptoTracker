@@ -57,10 +57,10 @@ void main() async {
     settingsBox,
     ConsoleLoggerService.instance,
   );
-  ILoggerService _logger = ConsoleLoggerService.instance;
+  ILoggerService logger = ConsoleLoggerService.instance;
 
   final settingsLocal = SettingsLocalDataSourceImpl(settingsCache);
-  final settingsRepoImpl = SettingsRepositoryImpl(settingsLocal, _logger);
+  final settingsRepoImpl = SettingsRepositoryImpl(settingsLocal, logger);
   await settingsRepoImpl.init();
 
   runApp(

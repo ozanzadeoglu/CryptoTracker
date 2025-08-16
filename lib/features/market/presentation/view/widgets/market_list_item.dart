@@ -4,14 +4,13 @@ part of '../market_screen.dart';
 class _MarketListItem extends StatelessWidget {
   final Coin coin;
   final VoidCallback onTap;
+  final String prefferedFiat;
 
-  const _MarketListItem({required this.coin, required this.onTap});
+  const _MarketListItem({required this.coin, required this.onTap, required this.prefferedFiat});
 
   @override
   Widget build(BuildContext context) {
     final String currentLocale = Localizations.localeOf(context).toString();
-    // TODO : Implement this properly when currency changing is a thing.
-    final String currencyCode = "USD";
     final theme = Theme.of(context);
     final priceChange = coin.priceChangePercentage24h;
     final priceChangeColor = priceChange >= 0
@@ -20,7 +19,7 @@ class _MarketListItem extends StatelessWidget {
 
     final String formattedPrice = formatCurrency(
       value: coin.currentPrice,
-      currencyCode: currencyCode,
+      currencyCode: prefferedFiat,
       locale: currentLocale,
     );
     return InkWell(

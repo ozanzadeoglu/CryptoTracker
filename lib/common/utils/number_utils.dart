@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 const Map<String, String> _currencySymbols = {
   'USD': '\$', // United States Dollar
   'TRY': '₺', // Turkish Lira
+  'usd': '\$', // United States Dollar
+  'try': '₺', // Turkish Lira
 };
 
 /// Formats a numeric [value] as a currency string with advanced rules.

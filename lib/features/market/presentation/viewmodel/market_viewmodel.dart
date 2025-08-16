@@ -48,6 +48,7 @@ class MarketViewModel extends ChangeNotifier {
   final ISettingsRepository _settingsRepository;
 
   late final StreamSubscription<bool> _connectivitySub;
+  late final StreamSubscription<String> _fiatSub;
 
   MarketViewModel({
     required GetMarketCoinsUseCase getMarketCoinsUseCase,
@@ -61,6 +62,8 @@ class MarketViewModel extends ChangeNotifier {
     _connectivitySub = _connectivityService.isOnlineStream.listen(
       (_) => notifyListeners(),
     );
+    _fiatSub = _settingsRepository.fiatStream.listen(_updateFiat);
+    _fiat = _settingsRepository.preferredFiat;
     fetchMarketCoins();
   }
 
@@ -71,7 +74,9 @@ class MarketViewModel extends ChangeNotifier {
   MarketSortOption _currentSortOption = MarketSortOption.marketCap;
   List<Coin> _marketListCache = []; // In-memory cache for the main market list
   bool _isSearchActive = false;
+  late String _fiat;
 
+  String get preferredFiat => _fiat;
   bool get isLoading => _isLoading;
   List<Coin> get coins => _coins;
   AppError? get error => _error;
@@ -84,6 +89,7 @@ class MarketViewModel extends ChangeNotifier {
   @override
   void dispose() {
     _connectivitySub.cancel();
+    _fiatSub.cancel();
     _debounce?.cancel();
     searchController.dispose();
     super.dispose();
@@ -143,9 +149,7 @@ class MarketViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
-    final currency = 'usd';
-
-    final result = await _getMarketCoinsUseCase.execute(currency: currency);
+    final result = await _getMarketCoinsUseCase.execute(currency: _fiat);
     if (result is Success<List<Coin>>) {
       _coins = result.value;
       // Cache the main list if not in a search context
@@ -208,6 +212,12 @@ class MarketViewModel extends ChangeNotifier {
       _error = result.failure.error;
     }
     _isLoading = false;
+    notifyListeners();
+  }
+
+  void _updateFiat(String newFiat) {
+    _fiat = newFiat;
+    fetchMarketCoins();
     notifyListeners();
   }
 }
