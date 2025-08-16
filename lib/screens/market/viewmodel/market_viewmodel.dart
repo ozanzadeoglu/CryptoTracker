@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
 import 'package:crypto_tracker/core/errors/app_errors.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
+import 'package:crypto_tracker/core/models/fiat_currency.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
@@ -48,7 +49,7 @@ class MarketViewModel extends ChangeNotifier {
   final ISettingsRepository _settingsRepository;
 
   late final StreamSubscription<bool> _connectivitySub;
-  late final StreamSubscription<String> _fiatSub;
+  late final StreamSubscription<FiatCurrency> _fiatSub;
 
   MarketViewModel({
     required GetMarketCoinsUseCase getMarketCoinsUseCase,
@@ -74,9 +75,9 @@ class MarketViewModel extends ChangeNotifier {
   MarketSortOption _currentSortOption = MarketSortOption.marketCap;
   List<Coin> _marketListCache = []; // In-memory cache for the main market list
   bool _isSearchActive = false;
-  late String _fiat;
+  late FiatCurrency _fiat;
 
-  String get preferredFiat => _fiat;
+  FiatCurrency get preferredFiat => _fiat;
   bool get isLoading => _isLoading;
   List<Coin> get coins => _coins;
   AppError? get error => _error;
@@ -149,7 +150,7 @@ class MarketViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
-    final result = await _getMarketCoinsUseCase.execute(currency: _fiat);
+    final result = await _getMarketCoinsUseCase.execute(currency: _fiat.name);
     if (result is Success<List<Coin>>) {
       _coins = result.value;
       // Cache the main list if not in a search context
@@ -215,7 +216,7 @@ class MarketViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  void _updateFiat(String newFiat) {
+  void _updateFiat(FiatCurrency newFiat) {
     _fiat = newFiat;
     fetchMarketCoins();
     notifyListeners();

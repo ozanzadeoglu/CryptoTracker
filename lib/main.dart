@@ -8,6 +8,7 @@ import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/core/connectivity/impl/connectivity_service_impl.dart';
 import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
+import 'package:crypto_tracker/core/models/app_locales.dart';
 import 'package:crypto_tracker/core/models/theme_preference.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
 import 'package:crypto_tracker/core/network/dio_client.dart';
@@ -194,14 +195,14 @@ class _CryptoTrackerStateState extends State<CryptoTrackerState> {
 
   // Subscriptions
   StreamSubscription<ThemePreference>? _themeSub;
-  StreamSubscription<String?>? _localeSub;
+  StreamSubscription<AppLocale>? _localeSub;
 
   @override
   void initState() {
     super.initState();
     _settingsRepo = Provider.of<ISettingsRepository>(context, listen: false);
     _themeMode = _mapThemePreferenceToThemeMode(_settingsRepo.themePreference);
-    _locale = _mapLocaleTagToLocale(_settingsRepo.localeTag);
+    _locale = _mapLocaleTagToLocale(_settingsRepo.localeTag.name);
     // Subscribe to streams to reactively update UI
     _themeSub = _settingsRepo.themePreferenceStream.listen((pref) {
       final newMode = _mapThemePreferenceToThemeMode(pref);
@@ -211,7 +212,7 @@ class _CryptoTrackerStateState extends State<CryptoTrackerState> {
     });
 
     _localeSub = _settingsRepo.localeTagStream.listen((tag) {
-      final newLocale = _mapLocaleTagToLocale(tag);
+      final newLocale = _mapLocaleTagToLocale(tag.name);
       // Compare using toString to avoid minor Locale instance inequality issues
       if (newLocale?.toString() != _locale?.toString()) {
         setState(() => _locale = newLocale);

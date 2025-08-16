@@ -1,14 +1,16 @@
+import 'package:crypto_tracker/core/models/app_locales.dart';
+import 'package:crypto_tracker/core/models/fiat_currency.dart';
 import 'package:crypto_tracker/core/models/theme_preference.dart';
 
 abstract class ISettingsRepository {
   ThemePreference get themePreference;
-  String? get localeTag; // BCP-47 string like "en"
-  String get preferredFiat;
+  AppLocale get localeTag; // BCP-47 string like "en"
+  FiatCurrency get preferredFiat;
 
   /// Reactive streams for subscribers who want updates.
   Stream<ThemePreference> get themePreferenceStream;
-  Stream<String?> get localeTagStream;
-  Stream<String> get fiatStream;
+  Stream<AppLocale> get localeTagStream;
+  Stream<FiatCurrency> get fiatStream;
 
   Future<void> init();
 

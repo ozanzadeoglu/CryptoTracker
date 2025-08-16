@@ -1,0 +1,1 @@
+enum AppLocale { tr, en }

@@ -91,7 +91,7 @@ class _Body extends StatelessWidget {
         return _MarketListItem(
           coin: coin,
           onTap: () {},
-          prefferedFiat: viewModel.preferredFiat,
+          prefferedFiat: viewModel.preferredFiat.name,
         );
       },
     );

@@ -1,13 +1,13 @@
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
+import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
-import 'package:crypto_tracker/features/market/presentation/viewmodel/market_viewmodel.dart';
-import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
+import 'package:crypto_tracker/screens/market/viewmodel/market_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:crypto_tracker/core/router/app_routes.dart';
-import 'package:crypto_tracker/features/market/presentation/view/market_screen.dart';
-import 'package:crypto_tracker/features/portfolio/presentation/view/portfolio_screen.dart';
+import 'package:crypto_tracker/screens/market/view/market_screen.dart';
+import 'package:crypto_tracker/screens/portfolio/view/portfolio_screen.dart';
 import 'package:provider/provider.dart';
 
 abstract final class AppRouter {
@@ -17,7 +17,7 @@ abstract final class AppRouter {
       GoRoute(
         path: AppRoutes.portfolio,
         name: AppRoutes.portfolioName,
-        builder: (context, state) => const PortfolioScreen(),
+        builder: (context, state) => const PortfolioScreen()
       ),
       GoRoute(
         path: AppRoutes.market,
@@ -37,10 +37,9 @@ abstract final class AppRouter {
     ],
     errorBuilder: (context, state) => Scaffold(
       body: Center(
+        // TODO: Add localization
         child: Text('Page not found: ${state.error}'),
       ),
     ),
   );
-
-  static var instance;
 }

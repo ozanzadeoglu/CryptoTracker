@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:crypto_tracker/core/cache/i_cache_service.dart';
 import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
+import 'package:crypto_tracker/core/models/fiat_currency.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 
@@ -9,15 +10,15 @@ class CacheOrchestrator {
   final ISettingsRepository _settingsRepo;
   final ICacheService<MarketFeature> _marketCache;
   final ILoggerService _logger;
-  StreamSubscription<String>? _fiatSub;
-  String? _fiat;
+  StreamSubscription<FiatCurrency>? _fiatSub;
+  FiatCurrency? _fiat;
 
   CacheOrchestrator(this._settingsRepo, this._marketCache, this._logger) {
     _fiatSub = _settingsRepo.fiatStream.listen(_onFiatChanged);
     _fiat = _settingsRepo.preferredFiat;
   }
 
-  Future<void> _onFiatChanged(String newFiat) async {
+  Future<void> _onFiatChanged(FiatCurrency newFiat) async {
     if (_fiat != null && _fiat == newFiat) return;
 
     _logger.logInfo(

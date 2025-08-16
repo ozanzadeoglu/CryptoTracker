@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
+import 'package:crypto_tracker/core/models/app_locales.dart';
 import 'package:crypto_tracker/core/models/fiat_currency.dart';
 import 'package:crypto_tracker/core/models/theme_preference.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
@@ -15,12 +16,12 @@ class SettingsRepositoryImpl implements ISettingsRepository, ISettingsWriter {
   SettingsRepositoryImpl(this._localDataSource, this._logger);
 
   late ThemePreference _themePref;
-  String? _localeTag;
-  late String _fiat;
+  late AppLocale _localeTag;
+  late FiatCurrency _fiat;
 
   final _themeController = StreamController<ThemePreference>.broadcast();
-  final _localeController = StreamController<String?>.broadcast();
-  final _fiatController = StreamController<String>.broadcast();
+  final _localeController = StreamController<AppLocale>.broadcast();
+  final _fiatController = StreamController<FiatCurrency>.broadcast();
 
   // ignore: unused_field
   bool _initialized = false;
@@ -50,29 +51,38 @@ class SettingsRepositoryImpl implements ISettingsRepository, ISettingsWriter {
     // LOCALE
     final localeRes = await _localDataSource.getLocaleTag();
     localeRes.when(
-      success: (tag) => _localeTag = tag,
+      success: (tag) {
+        _localeTag = AppLocale.values.firstWhere(
+          (e) => e.name == tag,
+          orElse: () => AppLocale.en,
+        );
+      },
       failure: (failure) {
         _logger.logWarning(
           "Unable to read theme.",
           source: "SettingsRepositoryImpl",
           error: failure,
         );
-        _localeTag = null;
+        _localeTag = AppLocale.en;
       },
     );
 
     // FIAT
     final fiatRes = await _localDataSource.getPreferredFiat();
     fiatRes.when(
-      success: (raw) =>
-          _fiat = (raw != null && raw.isNotEmpty) ? raw : FiatCurrency.usd.name,
+      success: (raw) {
+        _fiat = FiatCurrency.values.firstWhere(
+          (e) => e.name == raw,
+          orElse: () => FiatCurrency.usd,
+        );
+      },
       failure: (failure) {
         _logger.logWarning(
           "Unable to read fiat currency.",
           source: "SettingsRepositoryImpl",
           error: failure,
         );
-        _fiat = FiatCurrency.usd.name;
+        _fiat = FiatCurrency.usd;
       },
     );
 
@@ -99,19 +109,19 @@ class SettingsRepositoryImpl implements ISettingsRepository, ISettingsWriter {
   ThemePreference get themePreference => _themePref;
 
   @override
-  String? get localeTag => _localeTag;
+  AppLocale get localeTag => _localeTag;
 
   @override
-  String get preferredFiat => _fiat;
+  FiatCurrency get preferredFiat => _fiat;
 
   @override
   Stream<ThemePreference> get themePreferenceStream => _themeController.stream;
 
   @override
-  Stream<String?> get localeTagStream => _localeController.stream;
+  Stream<AppLocale> get localeTagStream => _localeController.stream;
 
   @override
-  Stream<String> get fiatStream => _fiatController.stream;
+  Stream<FiatCurrency> get fiatStream => _fiatController.stream;
 
   // Write only api implementations (ISettingsWriter)
   @override
@@ -140,13 +150,13 @@ class SettingsRepositoryImpl implements ISettingsRepository, ISettingsWriter {
   }
 
   @override
-  Future<void> setLocaleTag(String? tag) async {
+  Future<void> setLocaleTag(AppLocale tag) async {
     if (tag == _localeTag) return;
     _logger.logInfo(
       "Attempting to set locale",
       source: "SettingsRepositoryImpl",
     );
-    final res = await _localDataSource.setLocaleTag(tag);
+    final res = await _localDataSource.setLocaleTag(tag.name);
     res.when(
       success: (_) {
         _localeTag = tag;
@@ -167,13 +177,13 @@ class SettingsRepositoryImpl implements ISettingsRepository, ISettingsWriter {
   }
 
   @override
-  Future<void> setPreferredFiat(String fiat) async {
+  Future<void> setPreferredFiat(FiatCurrency fiat) async {
     if (fiat == _fiat) return;
     _logger.logInfo(
       "Attempting to set preferred fiat currency",
       source: "SettingsRepositoryImpl",
     );
-    final res = await _localDataSource.setPreferredFiat(fiat);
+    final res = await _localDataSource.setPreferredFiat(fiat.name);
     res.when(
       success: (_) {
         _fiat = fiat;
