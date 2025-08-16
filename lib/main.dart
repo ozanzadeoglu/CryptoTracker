@@ -1,17 +1,20 @@
+import 'dart:async';
+
 import 'package:crypto_tracker/core/cache/cache_config.dart';
 import 'package:crypto_tracker/core/cache/i_cache_service.dart';
 import 'package:crypto_tracker/core/cache/impl/hive_cache_service.dart';
+import 'package:crypto_tracker/core/cache_orchestrator/cache_orchestrator.dart';
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/core/connectivity/impl/connectivity_service_impl.dart';
+import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
-import 'package:crypto_tracker/core/localization/locale_provider.dart';
+import 'package:crypto_tracker/core/models/theme_preference.dart';
 import 'package:crypto_tracker/core/network/api_client.dart';
 import 'package:crypto_tracker/core/network/dio_client.dart';
 import 'package:crypto_tracker/core/router/app_router.dart';
 import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
-import 'package:crypto_tracker/core/theme/theme_provider.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_local_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/market_local_data_source_impl.dart';
@@ -23,7 +26,7 @@ import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usec
 import 'package:crypto_tracker/features/settings/data/datasources/i_settings_local_data_source.dart';
 import 'package:crypto_tracker/features/settings/data/datasources/settings_local_data_source_impl.dart';
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
-import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
+import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_writer.dart';
 import 'package:crypto_tracker/hive_registrar.g.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -49,6 +52,16 @@ void main() async {
 
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
   final marketCacheBox = await Hive.openBox(CacheBoxNames.marketCache);
+
+  final settingsCache = HiveCacheService<SettingsFeature>(
+    settingsBox,
+    ConsoleLoggerService.instance,
+  );
+  ILoggerService _logger = ConsoleLoggerService.instance;
+
+  final settingsLocal = SettingsLocalDataSourceImpl(settingsCache);
+  final settingsRepoImpl = SettingsRepositoryImpl(settingsLocal, _logger);
+  await settingsRepoImpl.init();
 
   runApp(
     MultiProvider(
@@ -79,19 +92,21 @@ void main() async {
         //========================================================================
 
         // --- Feature: Settings ---
-        Provider<ICacheService<SettingsFeature>>(
-          create: (context) => HiveCacheService<SettingsFeature>(
-            settingsBox,
-            context.read<ILoggerService>(),
-          ),
+        Provider<ICacheService<SettingsFeature>>(create: (_) => settingsCache),
+
+        Provider<ISettingsLocalDataSource>(create: (_) => settingsLocal),
+
+        Provider<ISettingsRepository>(
+          create: (_) => settingsRepoImpl,
+          dispose: (_, repo) {
+            if (repo is SettingsRepositoryImpl) repo.dispose();
+          },
         ),
-        Provider<ISettingsLocalDataSource>(
-          create: (context) => SettingsLocalDataSourceImpl(
-            context.read<ICacheService<SettingsFeature>>(),
-          ),
-        ),
-        ProxyProvider<ISettingsLocalDataSource, ISettingsRepository>(
-          update: (_, ds, __) => SettingsRepositoryImpl(ds),
+        Provider<ISettingsWriter>(
+          create: (_) => settingsRepoImpl,
+          dispose: (_, repo) {
+            if (repo is SettingsRepositoryImpl) repo.dispose();
+          },
         ),
 
         // --- Feature: Market ---
@@ -143,16 +158,18 @@ void main() async {
           update: (_, repo, __) => SearchCoinsUseCase(repo),
         ),
 
-        //========================================================================
-        // GLOBAL UI PROVIDERS
-        // (ChangeNotifiers that control global UI state)
-        //========================================================================
-        ChangeNotifierProxyProvider<ISettingsRepository, ThemeProvider>(
-          create: (context) =>
-              ThemeProvider(context.read<ISettingsRepository>()),
-          update: (_, repo, previous) => previous ?? ThemeProvider(repo),
+        // Orchestrator (depends on the above providers)
+        Provider<CacheOrchestrator>(
+          lazy: false,
+          create: (context) {
+            return CacheOrchestrator(
+              context.read<ISettingsRepository>(),
+              context.read<ICacheService<MarketFeature>>(),
+              context.read<ILoggerService>(),
+            );
+          },
+          dispose: (_, orchestrator) => orchestrator.dispose(),
         ),
-        ChangeNotifierProvider(create: (_) => LocaleProvider()),
       ],
 
       child: const CryptoTrackerState(),
@@ -161,23 +178,82 @@ void main() async {
   FlutterNativeSplash.remove();
 }
 
-class CryptoTrackerState extends StatelessWidget {
+class CryptoTrackerState extends StatefulWidget {
   const CryptoTrackerState({super.key});
+
+  @override
+  State<CryptoTrackerState> createState() => _CryptoTrackerStateState();
+}
+
+class _CryptoTrackerStateState extends State<CryptoTrackerState> {
+  late final ISettingsRepository _settingsRepo;
+
+  // Local UI state derived from the settings repo
+  late ThemeMode _themeMode;
+  Locale? _locale;
+
+  // Subscriptions
+  StreamSubscription<ThemePreference>? _themeSub;
+  StreamSubscription<String?>? _localeSub;
+
+  @override
+  void initState() {
+    super.initState();
+    _settingsRepo = Provider.of<ISettingsRepository>(context, listen: false);
+    _themeMode = _mapThemePreferenceToThemeMode(_settingsRepo.themePreference);
+    _locale = _mapLocaleTagToLocale(_settingsRepo.localeTag);
+    // Subscribe to streams to reactively update UI
+    _themeSub = _settingsRepo.themePreferenceStream.listen((pref) {
+      final newMode = _mapThemePreferenceToThemeMode(pref);
+      if (newMode != _themeMode) {
+        setState(() => _themeMode = newMode);
+      }
+    });
+
+    _localeSub = _settingsRepo.localeTagStream.listen((tag) {
+      final newLocale = _mapLocaleTagToLocale(tag);
+      // Compare using toString to avoid minor Locale instance inequality issues
+      if (newLocale?.toString() != _locale?.toString()) {
+        setState(() => _locale = newLocale);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _themeSub?.cancel();
+    _localeSub?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final localeProvider = context.watch<LocaleProvider>();
-    final themeProvider = context.watch<ThemeProvider>();
-
     return MaterialApp.router(
       routerConfig: AppRouter.router,
-      locale: localeProvider.locale,
+      locale: _locale,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
-      themeMode: themeProvider.themeMode,
+      themeMode: _themeMode,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       title: "TrackIt",
     );
+  }
+
+  ThemeMode _mapThemePreferenceToThemeMode(ThemePreference pref) {
+    switch (pref) {
+      case ThemePreference.light:
+        return ThemeMode.light;
+      case ThemePreference.dark:
+        return ThemeMode.dark;
+      case ThemePreference.system:
+        return ThemeMode.system;
+    }
+  }
+
+  Locale? _mapLocaleTagToLocale(String? tag) {
+    if (tag == null || tag.isEmpty) return null;
+    return Locale(tag);
   }
 }

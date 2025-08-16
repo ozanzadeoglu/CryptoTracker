@@ -46,7 +46,7 @@ abstract final class AppColors {
   ); // An off-white for primary text on dark backgrounds
   static const Color textLightGray = Color(
     0xFF94A3B8,
-  ); // For secondary text on dark backgrounds
+  );
 }
 
 /// Defines the ThemeData for the application, mapping the color palette to Flutter's theme properties.
@@ -62,7 +62,7 @@ abstract final class AppTheme {
       onPrimary: Colors.white,
       secondary: AppColors.actionBlueSecondary,
       onSecondary: AppColors.brandBlue,
-      surface: AppColors.surfaceLight,
+      surface: AppColors.backgroundLight,
       onSurface: AppColors.textDark,
       error: AppColors.dangerPrimary,
       onError: Colors.white,
@@ -111,7 +111,7 @@ abstract final class AppTheme {
       onPrimary: Colors.white,
       secondary: AppColors.surfaceDark,
       onSecondary: AppColors.textLight,
-      surface: AppColors.surfaceDark,
+      surface: AppColors.backgroundDark,
       onSurface: AppColors.textLight,
       error: AppColors.dangerPrimary,
       onError: Colors.white,

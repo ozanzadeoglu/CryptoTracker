@@ -1,10 +1,10 @@
 import 'dart:async';
+import 'package:crypto_tracker/core/core_settings/i_settings_repository.dart';
 import 'package:crypto_tracker/core/errors/app_errors.dart';
 import 'package:crypto_tracker/core/localization/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:crypto_tracker/core/connectivity/i_connectivity_service.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
-import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_repository.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/get_market_coins_usecase.dart';
 import 'package:crypto_tracker/features/market/domain/usecases/search_coins_usecase.dart';
@@ -95,7 +95,7 @@ class MarketViewModel extends ChangeNotifier {
   void toggleSearch() {
     _isSearchActive = !_isSearchActive;
     if (!_isSearchActive) {
-      // When closig searnch, clear the query and restore from cache
+      // When closing search, clear the query and restore from cache
       searchController.clear();
       onSearchQueryChanged('');
     }
@@ -129,7 +129,6 @@ class MarketViewModel extends ChangeNotifier {
   }
 
   Future<void> refresh() {
-    // We get the latest search query directly from the controller
     if (isSearchActive && searchController.text.isNotEmpty) {
       return _performSearch(searchController.text, isRefresh: true);
     } else {
@@ -149,7 +148,7 @@ class MarketViewModel extends ChangeNotifier {
     final result = await _getMarketCoinsUseCase.execute(currency: currency);
     if (result is Success<List<Coin>>) {
       _coins = result.value;
-      // Cache the main list if we are not in a search context
+      // Cache the main list if not in a search context
       if (!isSearchActive) {
         _marketListCache = _coins;
       }
@@ -200,7 +199,6 @@ class MarketViewModel extends ChangeNotifier {
       notifyListeners();
     }
 
-    // The call is now much simpler. It no longer needs to pass the currency.
     final result = await _searchCoinsUseCase.execute(query);
 
     if (result is Success<List<Coin>>) {
