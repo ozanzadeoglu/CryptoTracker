@@ -10,4 +10,7 @@ abstract class IMarketLocalDataSource {
 
   /// Saves a list of coins to the local cache.
   Future<ApiResult<void>> cacheMarketCoins(List<Coin> coins);
+
+  /// Checks if market cache is empty.
+  bool isCacheEmpty();
 }

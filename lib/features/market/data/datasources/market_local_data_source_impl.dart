@@ -74,4 +74,9 @@ class MarketLocalDataSourceImpl implements IMarketLocalDataSource {
         return ApiResult.failure(apiFailure);
     }
   }
+
+  @override
+  bool isCacheEmpty() {
+   return _cacheService.isBoxEmpty();
+  }
 }

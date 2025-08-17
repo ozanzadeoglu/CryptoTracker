@@ -113,6 +113,7 @@ class HiveCacheService<R> implements ICacheService<R> {
       _logger.logInfo("Attempting to CLEAR cache", source: 'HiveCacheService');
       await _box.clear();
       _logger.logInfo("Successfully CLEARED cache", source: 'HiveCacheService');
+      _box.isEmpty;
       return const ApiResult.success(null);
     } on HiveError catch (e, st) {
       final msg = "Failed to CLEAR Hive box: ${e.message}";
@@ -128,4 +129,10 @@ class HiveCacheService<R> implements ICacheService<R> {
       );
     }
   }
+
+  @override
+  bool isBoxEmpty() {
+    return _box.isEmpty;
+  }
+  
 }

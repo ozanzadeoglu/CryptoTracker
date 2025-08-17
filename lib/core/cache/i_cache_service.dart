@@ -45,4 +45,7 @@ abstract class ICacheService<R> {
   /// Returns [ApiResult.success] on success or [ApiResult.failure]
   /// with [ApiFailure] on errors.
   Future<ApiResult<void>> clear();
+
+  /// Checks if box is empty.
+  bool isBoxEmpty();
 }

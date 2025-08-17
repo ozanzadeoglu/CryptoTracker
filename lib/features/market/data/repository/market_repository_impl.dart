@@ -71,8 +71,11 @@ class MarketRepositoryImpl implements IMarketRepository {
         // that date but it comes with a drawback, we would need to fetch from the local db.
         // With this logic, we might recache before TTL, but this case would happen only once
         // in a app session, so I don't think it's a big drawback.
+
         if (_lastCacheDate == null ||
-            DateTime.now().difference(_lastCacheDate!) >= _cacheTTL) {
+            DateTime.now().difference(_lastCacheDate!) >= _cacheTTL ||
+                _localDataSource.isCacheEmpty()) {
+
           _logger.logInfo(
             ".fetchMarketCoins: Updating cache (TTL expired)",
             source: "MarketRepositoryImpl",

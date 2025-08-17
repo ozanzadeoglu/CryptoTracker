@@ -19,7 +19,9 @@ class CacheOrchestrator {
   }
 
   Future<void> _onFiatChanged(FiatCurrency newFiat) async {
-    if (_fiat != null && _fiat == newFiat) return;
+    final isBoxEmpty = _marketCache.isBoxEmpty();
+
+    if (_fiat == null && _fiat == newFiat || isBoxEmpty) return; 
 
     _logger.logInfo(
       "Preffered fiat has been changed, attempting to clear market cache.",
