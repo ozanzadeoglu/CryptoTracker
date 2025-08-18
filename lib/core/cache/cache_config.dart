@@ -9,8 +9,8 @@ abstract final class CacheBoxNames {
 abstract final class HiveTypeIds {
   static const int coin = 1;
   static const int sparkline = 2;
-  static const int transactionType = 3;
-  static const int transaction = 4;
+  static const int transaction = 3;
+  static const int portfolioAssetSummary = 4;
   static const int cachedCoins = 5;
 }
 
