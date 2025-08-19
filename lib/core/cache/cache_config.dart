@@ -12,11 +12,7 @@ abstract final class HiveTypeIds {
   static const int transaction = 3;
   static const int portfolioAssetSummary = 4;
   static const int cachedCoins = 5;
+  static const int exchangeRate = 6;
+  static const int latestRateCacheEntry = 7;
 }
 
-/// Contains the keys for all values stored in the Hive boxes.
-abstract final class CacheKeys {
-  /// The key for the saved theme mode ('light', 'dark', or 'system').
-  /// Stored in the [CacheBoxNames.settings] box.
-  static const String themeMode = 'themeMode';
-}

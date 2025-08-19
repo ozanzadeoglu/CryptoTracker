@@ -3,17 +3,22 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/models/exchange_rate_model.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/models/latest_rate_cache_entry_model.dart';
 import 'package:crypto_tracker/features/market/domain/models/cached_coins.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
-import 'package:crypto_tracker/features/portfolio/domain/models/transaction_model.dart';
+import 'package:crypto_tracker/features/portfolio/data/models/portfolio_asset_summary_model.dart';
+import 'package:crypto_tracker/features/portfolio/data/models/transaction_model.dart';
 
 extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(CachedCoinsAdapter());
     registerAdapter(CoinAdapter());
+    registerAdapter(ExchangeRateModelAdapter());
+    registerAdapter(LatestRateCacheEntryModelAdapter());
+    registerAdapter(PortfolioAssetSummaryModelAdapter());
     registerAdapter(SparklineAdapter());
-    registerAdapter(TransactionAdapter());
-    registerAdapter(TransactionTypeAdapter());
+    registerAdapter(TransactionModelAdapter());
   }
 }
 
@@ -21,8 +26,10 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(CachedCoinsAdapter());
     registerAdapter(CoinAdapter());
+    registerAdapter(ExchangeRateModelAdapter());
+    registerAdapter(LatestRateCacheEntryModelAdapter());
+    registerAdapter(PortfolioAssetSummaryModelAdapter());
     registerAdapter(SparklineAdapter());
-    registerAdapter(TransactionAdapter());
-    registerAdapter(TransactionTypeAdapter());
+    registerAdapter(TransactionModelAdapter());
   }
 }
