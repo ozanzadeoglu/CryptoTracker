@@ -13,6 +13,5 @@ abstract final class HiveTypeIds {
   static const int portfolioAssetSummary = 4;
   static const int cachedCoins = 5;
   static const int exchangeRate = 6;
-  static const int latestRateCacheEntry = 7;
 }
 
