@@ -13,21 +13,22 @@ abstract final class ApiEndpoints {
     int page = 1,
     bool sparkline = true,
     String? order,
-    List<String>? ids, 
+    List<String>? ids,
   }) {
     // Start with the base path and required parameters
-    String path = '$_coins/markets?vs_currency=$vsCurrency&per_page=$perPage&page=$page&sparkline=$sparkline';
-    
+    String path =
+        '$_coins/markets?vs_currency=$vsCurrency&per_page=$perPage&page=$page&sparkline=$sparkline';
+
     // Append the order parameter if it's provided.
     if (order != null && ids == null) {
       path += '&order=$order';
     }
-    
+
     // Append the ids parameter if it's provided
     if (ids != null && ids.isNotEmpty) {
       path += '&ids=${ids.join(',')}';
     }
-    
+
     return path;
   }
 
@@ -49,9 +50,42 @@ abstract final class ApiEndpoints {
   static String supportedVSCurrencies() {
     return 'simple/supported_vs_currencies';
   }
-  
+
   /// Endpoint for searching for coins by a query string.
   static String search(String query) {
     return 'search?query=$query';
+  }
+
+  /// Endpoint for fetching historical exchange rates for a specific date from Frankfurter API.
+  ///
+  /// Corresponds to the API path: `/{YYYY-MM-DD}`
+  static String historicalExhangeRate({
+    required DateTime date,
+    required String from,
+    required String to,
+  }) {
+    final dateString = _formatDate(date);
+    return '$dateString${"?from=$from&to=$to"}';
+  }
+
+  /// Helper to format a DateTime object into 'YYYY-MM-DD' string required by the Frankfurter API.
+  static String _formatDate(DateTime date) {
+    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+  }
+
+  /// Endpoint for deriving today's real-time exchange rate via CoinGecko.
+  ///
+  /// This works by fetching the price of Bitcoin in two different fiat
+  /// currencies to calculate the exchange rate and it's used for addressing
+  ///  shortcoming of Frankfurter API.
+  static String todaysExchangeRate({
+    required String fromCurrency,
+    required String toCurrency,
+  }) {
+    
+    const idsParam = 'bitcoin';
+    final vsCurrenciesParam =
+        '${fromCurrency.toLowerCase()},${toCurrency.toLowerCase()}';
+    return 'simple/price?ids=$idsParam&vs_currencies=$vsCurrenciesParam';
   }
 }
