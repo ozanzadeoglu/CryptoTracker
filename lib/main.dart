@@ -29,7 +29,6 @@ import 'package:crypto_tracker/features/settings/data/datasources/settings_local
 import 'package:crypto_tracker/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:crypto_tracker/features/settings/domain/repositories/i_settings_writer.dart';
 import 'package:crypto_tracker/hive_registrar.g.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
@@ -80,11 +79,18 @@ void main() async {
           dispose: (_, service) => service.dispose(),
         ),
 
-        Provider<Dio>(create: (context) => DioClient.instance.dio),
+        Provider<ApiClient<CoinGeckoApi>>(
+          create: (context) => ApiClient(
+            context.read<ILoggerService>(),
+            DioClient.createCoinGeckoDio(),
+          ),
+        ),
 
-        Provider<ApiClient>(
-          create: (context) =>
-              ApiClient(context.read<ILoggerService>(), context.read<Dio>()),
+        Provider<ApiClient<FrankfurterApi>>(
+          create: (context) => ApiClient(
+            context.read<ILoggerService>(),
+            DioClient.createFrankfurterDio(),
+          ),
         ),
 
         //========================================================================
@@ -122,7 +128,7 @@ void main() async {
         // Remote data source of market feature, used in MarketRepository
         Provider<IMarketRemoteDataSource>(
           create: (context) => MarketRemoteDataSourceImpl(
-            context.read<ApiClient>(),
+            context.read<ApiClient<CoinGeckoApi>>(),
             context.read<ILoggerService>(),
           ),
         ),

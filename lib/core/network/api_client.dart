@@ -5,8 +5,15 @@ import "package:crypto_tracker/core/services/logging/logger_service.dart";
 import "package:dio/dio.dart";
 
 
+// Market classes, makes passing different dio clients to ApiClient's possible, and
+// provider can differentiate between ApiClients.
+abstract class ApiMarker{}
+abstract class CoinGeckoApi extends ApiMarker{}
+abstract class FrankfurterApi extends ApiMarker{}
+
+
 /// Gateway to all remote API's.
-class ApiClient {
+class ApiClient<R extends ApiMarker>{
   final Dio _dio;
   final ILoggerService _logger;
 
