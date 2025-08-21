@@ -29,8 +29,8 @@ abstract class ExchangeRateModel with _$ExchangeRateModel {
 
   ExchangeRate toEntity() {
     return ExchangeRate(
-      from: FiatCurrency.values.firstWhere((e) => e.name == from),
-      to: FiatCurrency.values.firstWhere((e) => e.name == to),
+      from: FiatCurrency.values.firstWhere((e) => e.name.toLowerCase() == from.toLowerCase()),
+      to: FiatCurrency.values.firstWhere((e) => e.name.toLowerCase() == to.toLowerCase()),
       date: date,
       rate: rate,
     );
