@@ -90,8 +90,8 @@ abstract class ExchangeRateModel with _$ExchangeRateModel {
         throw const FormatException('Missing "bitcoin" key in API response.');
       }
 
-      final fromPrice = btcData[from.name] as num?;
-      final toPrice = btcData[to.name] as num?;
+      final fromPrice = btcData[from.name.toLowerCase()] as num?;
+      final toPrice = btcData[to.name.toLowerCase()] as num?;
 
       if (fromPrice == null || toPrice == null) {
         throw FormatException(
