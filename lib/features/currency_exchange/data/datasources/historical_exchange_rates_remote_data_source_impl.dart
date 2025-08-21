@@ -28,34 +28,7 @@ class HistoricalExchangeRatesRemoteDataSourceImpl
 
     return _apiClient.get<ExchangeRateModel>(
       path: path,
-      fromJson: (json) {
-        try {
-          // The Frankfurter API response looks like:
-          // {"amount": 1.0, "base": "USD", "date": "2024-05-10", "rates": {"TRY": 32.228}}
-          final rates = json['rates'] as Map<String, dynamic>?;
-          if (rates == null) {
-            throw const FormatException('Missing "rates" key in API response.');
-          }
-          
-          // Note: Frankfurter API uses uppercase currency codes in its response.
-          final rateValue = rates[to.name.toUpperCase()] as num?;
-          if (rateValue == null) {
-            throw FormatException(
-              'Rate for "${to.name.toUpperCase()}" not found in API response.',
-            );
-          }
-          
-          return ExchangeRateModel(
-            from: from.name,
-            to: to.name,
-            date: date, 
-            rate: rateValue.toDouble(),
-          );
-          
-        } on Exception catch (e) {
-          throw FormatException('Failed to parse historical ExchangeRateModel: $e');
-        }
-      },
+      fromJson: (json) => ExchangeRateModel.fromFrankfurterJson(json, to)
     );
   }
 
