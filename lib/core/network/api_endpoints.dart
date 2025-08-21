@@ -70,7 +70,7 @@ abstract final class ApiEndpoints {
 
   /// Helper to format a DateTime object into 'YYYY-MM-DD' string required by the Frankfurter API.
   static String _formatDate(DateTime date) {
-    return "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
+    return "/${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
   }
 
   /// Endpoint for deriving today's real-time exchange rate via CoinGecko.
@@ -86,6 +86,6 @@ abstract final class ApiEndpoints {
     const idsParam = 'bitcoin';
     final vsCurrenciesParam =
         '${fromCurrency.toLowerCase()},${toCurrency.toLowerCase()}';
-    return 'simple/price?ids=$idsParam&vs_currencies=$vsCurrenciesParam';
+    return '/simple/price?ids=$idsParam&vs_currencies=$vsCurrenciesParam';
   }
 }
