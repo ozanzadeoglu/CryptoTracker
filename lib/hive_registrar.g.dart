@@ -3,7 +3,7 @@
 // Check in to version control
 
 import 'package:hive_ce/hive.dart';
-import 'package:crypto_tracker/features/currency_exchange/data/models/exchange_rate_model.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/models/daily_exchange_rates_model.dart';
 import 'package:crypto_tracker/features/market/domain/models/cached_coins.dart';
 import 'package:crypto_tracker/features/market/domain/models/coin_model.dart';
 import 'package:crypto_tracker/features/portfolio/data/models/portfolio_asset_summary_model.dart';
@@ -13,7 +13,7 @@ extension HiveRegistrar on HiveInterface {
   void registerAdapters() {
     registerAdapter(CachedCoinsAdapter());
     registerAdapter(CoinAdapter());
-    registerAdapter(ExchangeRateModelAdapter());
+    registerAdapter(DailyExchangeRatesModelAdapter());
     registerAdapter(PortfolioAssetSummaryModelAdapter());
     registerAdapter(SparklineAdapter());
     registerAdapter(TransactionModelAdapter());
@@ -24,7 +24,7 @@ extension IsolatedHiveRegistrar on IsolatedHiveInterface {
   void registerAdapters() {
     registerAdapter(CachedCoinsAdapter());
     registerAdapter(CoinAdapter());
-    registerAdapter(ExchangeRateModelAdapter());
+    registerAdapter(DailyExchangeRatesModelAdapter());
     registerAdapter(PortfolioAssetSummaryModelAdapter());
     registerAdapter(SparklineAdapter());
     registerAdapter(TransactionModelAdapter());

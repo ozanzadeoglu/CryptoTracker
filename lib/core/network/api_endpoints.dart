@@ -1,3 +1,5 @@
+import 'package:crypto_tracker/core/models/fiat_currency.dart';
+
 /// A centralized place for all API endpoint paths and parameter builders.
 /// This helps to avoid magic strings and keep the API configuration in one place.
 abstract final class ApiEndpoints {
@@ -56,36 +58,32 @@ abstract final class ApiEndpoints {
     return 'search?query=$query';
   }
 
+  /// Endpoint for deriving today's real-time exchanges rate via CoinGecko.
+  ///
+  /// This works by fetching the price of Bitcoin in all fiat's inside FiatCurrency
+  /// enum to calculate the exchange rates and it's used for addressing
+  /// shortcoming of Frankfurter API.
+  static String todaysExchangeRate() {
+    final Set<String> currencyCodes = FiatCurrency.values
+        .map((currency) => currency.name.toLowerCase())
+        .toSet();
+    final vsCurrenciesParam = currencyCodes.join(',');
+
+    const idsParam = 'bitcoin';
+
+    return '/simple/price?ids=$idsParam&vs_currencies=$vsCurrenciesParam';
+  }
+
+
   /// Endpoint for fetching historical exchange rates for a specific date from Frankfurter API.
   ///
   /// Corresponds to the API path: `/{YYYY-MM-DD}`
-  static String historicalExhangeRate({
-    required DateTime date,
-    required String from,
-    required String to,
-  }) {
-    final dateString = _formatDate(date);
-    return '$dateString${"?from=$from&to=$to"}';
+  static String historicalDailyExchangeRate({required DateTime date}) {
+    return "${_formatDate(date)}?base=USD";
   }
 
   /// Helper to format a DateTime object into 'YYYY-MM-DD' string required by the Frankfurter API.
   static String _formatDate(DateTime date) {
     return "/${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}";
-  }
-
-  /// Endpoint for deriving today's real-time exchange rate via CoinGecko.
-  ///
-  /// This works by fetching the price of Bitcoin in two different fiat
-  /// currencies to calculate the exchange rate and it's used for addressing
-  ///  shortcoming of Frankfurter API.
-  static String todaysExchangeRate({
-    required String fromCurrency,
-    required String toCurrency,
-  }) {
-    
-    const idsParam = 'bitcoin';
-    final vsCurrenciesParam =
-        '${fromCurrency.toLowerCase()},${toCurrency.toLowerCase()}';
-    return '/simple/price?ids=$idsParam&vs_currencies=$vsCurrenciesParam';
   }
 }
