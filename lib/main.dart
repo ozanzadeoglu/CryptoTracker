@@ -16,6 +16,15 @@ import 'package:crypto_tracker/core/router/app_router.dart';
 import 'package:crypto_tracker/core/services/logging/impl/console_logger_service.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:crypto_tracker/core/theme/app_theme.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/current_exchange_rates_remote_data_source_impl.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/historical_exchange_rates_local_data_source_impl.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/historical_exchange_rates_remote_data_source_impl.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_current_exchange_rates_remote_data_source.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_local_data_source.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_remote_data_source.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/repository/currency_repository_impl.dart';
+import 'package:crypto_tracker/features/currency_exchange/domain/entities/daily_exchange_rates.dart';
+import 'package:crypto_tracker/features/currency_exchange/domain/repository/i_currency_repository.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_local_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/market_local_data_source_impl.dart';
@@ -52,6 +61,9 @@ void main() async {
 
   final settingsBox = await Hive.openBox(CacheBoxNames.settings);
   final marketCacheBox = await Hive.openBox(CacheBoxNames.marketCache);
+  final dailyExchangeRatesBox = await Hive.openBox(
+    CacheBoxNames.dailyExchangeRates,
+  );
 
   final settingsCache = HiveCacheService<SettingsFeature>(
     settingsBox,
@@ -92,11 +104,6 @@ void main() async {
             DioClient.createFrankfurterDio(),
           ),
         ),
-
-        //========================================================================
-        // FEATURE DATA & DOMAIN LAYERS
-        // (Grouped by feature for clarity)
-        //========================================================================
 
         // --- Feature: Settings ---
         Provider<ICacheService<SettingsFeature>>(create: (_) => settingsCache),
@@ -163,6 +170,44 @@ void main() async {
         ),
         ProxyProvider<IMarketRepository, SearchCoinsUseCase>(
           update: (_, repo, __) => SearchCoinsUseCase(repo),
+        ),
+
+        // --- Feature: Exchange Rate ---
+        Provider<ICacheService<ExchangeRatesFeature>>(
+          create: (context) => HiveCacheService<ExchangeRatesFeature>(
+            dailyExchangeRatesBox,
+            context.read<ILoggerService>(),
+          ),
+        ),
+
+        Provider<ICurrentExchangeRatesRemoteDatasource>(
+          create: (context) => CurrentExchangeRatesRemoteDataSourceImpl(
+            context.read<ApiClient<CoinGeckoApi>>(),
+            context.read<ILoggerService>(),
+          ),
+        ),
+
+        Provider<IHistoricalExchangeRatesRemoteDataSource>(
+          create: (context) => HistoricalExchangeRatesRemoteDataSourceImpl(
+            context.read<ApiClient<FrankfurterApi>>(),
+            context.read<ILoggerService>(),
+          ),
+        ),
+
+        Provider<IHistoricalExchangeRatesLocalDataSource>(
+          create: (context) => HistoricalExchangeRatesLocalDataSourceImpl(
+            context.read<ICacheService<ExchangeRatesFeature>>(),
+            context.read<ILoggerService>(),
+          ),
+        ),
+
+        Provider<ICurrencyRepository>(
+          create: (context) => CurrencyRepositoryImpl(
+            context.read<ICurrentExchangeRatesRemoteDatasource>(),
+            context.read<IHistoricalExchangeRatesRemoteDataSource>(),
+            context.read<IHistoricalExchangeRatesLocalDataSource>(),
+            context.read<ILoggerService>(),
+          ),
         ),
 
         // Orchestrator (depends on the above providers)

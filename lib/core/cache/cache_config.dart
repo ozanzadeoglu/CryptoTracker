@@ -3,6 +3,7 @@ abstract final class CacheBoxNames {
   /// The box for storing user-specific settings.
   static const String settings = 'settingsBox';
   static const String marketCache = "marketCacheBox";
+  static const String dailyExchangeRates = "dailyExchangeRatesBox";
 }
 
 /// Contains the type id's of all Hive classes used in application.

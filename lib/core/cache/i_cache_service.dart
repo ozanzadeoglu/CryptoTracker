@@ -11,6 +11,7 @@ import 'package:crypto_tracker/core/network/api_result.dart';
 // tags to indicate which feature a particular HiveCacheService belongs to.
 class MarketFeature{}
 class SettingsFeature{}
+class ExchangeRatesFeature{}
 
 /// Defines the contract for a generic key-value caching service.
 ///

@@ -4,6 +4,7 @@ import 'package:crypto_tracker/core/network/api_failure.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
 import 'package:crypto_tracker/core/services/logging/logger_service.dart';
 import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_current_exchange_rates_remote_data_source.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_local_data_source.dart';
 import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_remote_data_source.dart';
 import 'package:crypto_tracker/features/currency_exchange/data/models/daily_exchange_rates_model.dart';
 import 'package:crypto_tracker/features/currency_exchange/domain/entities/daily_exchange_rates.dart';
@@ -12,11 +13,13 @@ import 'package:crypto_tracker/features/currency_exchange/domain/repository/i_cu
 class CurrencyRepositoryImpl implements ICurrencyRepository {
   final ICurrentExchangeRatesRemoteDatasource _currentRemoteDataSource;
   final IHistoricalExchangeRatesRemoteDataSource _historicalRemoteDataSource;
+  final IHistoricalExchangeRatesLocalDataSource _historicalLocalDataSource;
   final ILoggerService _logger;
 
   CurrencyRepositoryImpl(
     this._currentRemoteDataSource,
     this._historicalRemoteDataSource,
+    this._historicalLocalDataSource,
     this._logger,
   );
 
@@ -26,19 +29,82 @@ class CurrencyRepositoryImpl implements ICurrencyRepository {
   Future<ApiResult<DailyExchangeRates>> getRateForDate({
     required DateTime date,
   }) async {
-    ApiResult<DailyExchangeRatesModel> result;
+    // Just in case, that the date passed is not utc.
+    date = date.toUtc();
+
+    final logDateString = date.toIso8601String().split("T").first;
+
+    // If today's exchange rate is asked, get it from coingecko remotely.
     if (_isToday(date)) {
-      result = await _currentRemoteDataSource.getCurrentExchangeRates();
-    } else {
-      result = await _historicalRemoteDataSource.getHistoricalRate(date);
+      final result = await _currentRemoteDataSource.getCurrentExchangeRates();
+      return result.when(
+        success: (model) => ApiResult.success(model.toEntity()),
+        // TODO: Might implement a logic here to fetch latest historical result
+        // to adress case where user add's a transaction of today while offline.
+        failure: (error) => ApiResult.failure(error),
+      );
     }
 
-    return result.when(
-      success: (model) => ApiResult.success(model.toEntity()),
+    // If date is not today, check the exchange rate caches.
+    final localResult = await _historicalLocalDataSource.getRateForDate(date);
+    DailyExchangeRatesModel? cachedModel;
+
+    
+    localResult.when(
+      success: (result) {
+        cachedModel = result;
+      },
+      failure: (e) {
+        _logger.logWarning(
+          "Failed to read from cache for date: $logDateString. Will attempt remote fetch.",
+          error: e,
+          source: "CurrencyRepositoryImpl",
+        );
+      },
+    );
+    
+    // If fetched the data from the cache succesfully, return it.
+    if (cachedModel != null) {
+      _logger.logInfo(
+        "Daily exchange rate cache found for date: $logDateString",
+        source: "CurrencyRepositoryImpl",
+      );
+      return ApiResult.success(cachedModel!.toEntity());
+    }
+
+    // If the daily exchange rates of asked date isn't cached, try to fetch remotely.
+    _logger.logInfo(
+      "Daily exchange rate is not found for date: $logDateString. Fetching from remote source.",
+      source: "CurrencyRepositoryImpl",
+    );
+    final remoteResult = await _historicalRemoteDataSource.getHistoricalRate(
+      date,
+    );
+
+    // Return remote fetch result.
+    return remoteResult.when(
+      success: (remoteModel) async {
+        _logger.logInfo(
+          "Successfully fetched remote daily exchange rate data for $logDateString. Caching now.",
+          source: "CurrencyRepositoryImpl",
+        );
+        try {
+          // try to cache the daily exchange rate data for future.
+          _historicalLocalDataSource.saveRateForDate(remoteModel);
+        } catch (e) {
+          _logger.logError(
+            "Failed to save exchange rate to cache for date: $logDateString",
+            error: e,
+            source: "CurrencyRepositoryImpl",
+          );
+        }
+        return ApiResult.success(remoteModel.toEntity());
+      },
       failure: (error) {
         return ApiResult.failure(error);
       },
     );
+
   }
 
   @override
