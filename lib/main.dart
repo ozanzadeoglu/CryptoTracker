@@ -23,8 +23,9 @@ import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_cur
 import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_local_data_source.dart';
 import 'package:crypto_tracker/features/currency_exchange/data/datasources/i_historical_exchange_rates_remote_data_source.dart';
 import 'package:crypto_tracker/features/currency_exchange/data/repository/currency_repository_impl.dart';
-import 'package:crypto_tracker/features/currency_exchange/domain/entities/daily_exchange_rates.dart';
 import 'package:crypto_tracker/features/currency_exchange/domain/repository/i_currency_repository.dart';
+import 'package:crypto_tracker/features/currency_exchange/domain/usecases/get_historical_rates_usecase.dart';
+import 'package:crypto_tracker/features/currency_exchange/domain/usecases/get_rate_for_date_usecase.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_local_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/i_market_remote_data_source.dart';
 import 'package:crypto_tracker/features/market/data/datasources/market_local_data_source_impl.dart';
@@ -208,6 +209,17 @@ void main() async {
             context.read<IHistoricalExchangeRatesLocalDataSource>(),
             context.read<ILoggerService>(),
           ),
+        ),
+
+        // Use cases
+        Provider<GetRateForDateUsecase>(
+          create: (context) =>
+              GetRateForDateUsecase(context.read<ICurrencyRepository>()),
+        ),
+
+        Provider<GetHistoricalRatesUsecase>(
+          create: (context) =>
+              GetHistoricalRatesUsecase(context.read<ICurrencyRepository>()),
         ),
 
         // Orchestrator (depends on the above providers)
