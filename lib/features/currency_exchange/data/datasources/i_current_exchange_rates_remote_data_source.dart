@@ -1,11 +1,7 @@
-import 'package:crypto_tracker/core/models/fiat_currency.dart';
 import 'package:crypto_tracker/core/network/api_result.dart';
-import 'package:crypto_tracker/features/currency_exchange/data/models/exchange_rate_model.dart';
+import 'package:crypto_tracker/features/currency_exchange/data/models/daily_exchange_rates_model.dart';
 
 abstract class ICurrentExchangeRatesRemoteDatasource {
-  /// Fetches a single current exchange rate.
-  Future<ApiResult<ExchangeRateModel>> getCurrentExchangeRate(
-    FiatCurrency from,
-    FiatCurrency to,
-  );
+  /// Fetches today's exchange rates.
+  Future<ApiResult<DailyExchangeRatesModel>> getCurrentExchangeRates();
 }
