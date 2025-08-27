@@ -46,25 +46,3 @@ class DailyExchangeRatesModelAdapter
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
-
-// **************************************************************************
-// JsonSerializableGenerator
-// **************************************************************************
-
-_DailyExchangeRatesModel _$DailyExchangeRatesModelFromJson(
-  Map<String, dynamic> json,
-) => _DailyExchangeRatesModel(
-  date: json['date'] as String,
-  base: json['base'] as String,
-  rates: (json['rates'] as Map<String, dynamic>).map(
-    (k, e) => MapEntry(k, (e as num).toDouble()),
-  ),
-);
-
-Map<String, dynamic> _$DailyExchangeRatesModelToJson(
-  _DailyExchangeRatesModel instance,
-) => <String, dynamic>{
-  'date': instance.date,
-  'base': instance.base,
-  'rates': instance.rates,
-};

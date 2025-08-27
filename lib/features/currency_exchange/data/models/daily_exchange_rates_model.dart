@@ -20,8 +20,26 @@ abstract class DailyExchangeRatesModel with _$DailyExchangeRatesModel {
     @HiveField(2) required Map<String, double> rates,
   }) = _DailyExchangeRatesModel;
 
-  factory DailyExchangeRatesModel.fromJson(Map<String, dynamic> json) =>
-      _$DailyExchangeRatesModelFromJson(json);
+  factory DailyExchangeRatesModel.fromJson(
+    Map<String, dynamic> json,
+    DateTime date,
+  ) {
+    // The exchange rate doesn't get updated on weekends and probably on public holidays too,
+    // and if user tries to get an unupdated day, api return's historical data of latest
+    // available day. But, because we serialize from api's date, if user tries to fetch
+    // an holiday's exchange rate, logic can't get that date from cache, because the date queried, and
+    // date fetched are not same.
+    // That's the reason the "date" inside json is overrided.
+    json['date'] = date.toIso8601String().split('T').first;
+    return DailyExchangeRatesModel(
+      date: json['date'] as String,
+      base: json['base'] as String,
+      rates: (json['rates'] as Map<String, dynamic>).map(
+        (k, e) => MapEntry(k, (e as num).toDouble()),
+      ),
+    );
+  }
+
 
   /// Creates a model from the CoinGecko /simple/price endpoint response.
   factory DailyExchangeRatesModel.fromCoinGecko(Map<String, dynamic> json) {

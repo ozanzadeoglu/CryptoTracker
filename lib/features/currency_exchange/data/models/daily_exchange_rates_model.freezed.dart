@@ -11,7 +11,6 @@ part of 'daily_exchange_rates_model.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$DailyExchangeRatesModel {
 
@@ -22,8 +21,6 @@ mixin _$DailyExchangeRatesModel {
 @pragma('vm:prefer-inline')
 $DailyExchangeRatesModelCopyWith<DailyExchangeRatesModel> get copyWith => _$DailyExchangeRatesModelCopyWithImpl<DailyExchangeRatesModel>(this as DailyExchangeRatesModel, _$identity);
 
-  /// Serializes this DailyExchangeRatesModel to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -31,7 +28,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is DailyExchangeRatesModel&&(identical(other.date, date) || other.date == date)&&(identical(other.base, base) || other.base == base)&&const DeepCollectionEquality().equals(other.rates, rates));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,base,const DeepCollectionEquality().hash(rates));
 
@@ -208,11 +205,11 @@ return $default(_that.date,_that.base,_that.rates);case _:
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _DailyExchangeRatesModel extends DailyExchangeRatesModel {
   const _DailyExchangeRatesModel({@HiveField(0) required this.date, @HiveField(1) required this.base, @HiveField(2) required final  Map<String, double> rates}): _rates = rates,super._();
-  factory _DailyExchangeRatesModel.fromJson(Map<String, dynamic> json) => _$DailyExchangeRatesModelFromJson(json);
+  
 
 @override@HiveField(0) final  String date;
 @override@HiveField(1) final  String base;
@@ -230,17 +227,14 @@ class _DailyExchangeRatesModel extends DailyExchangeRatesModel {
 @pragma('vm:prefer-inline')
 _$DailyExchangeRatesModelCopyWith<_DailyExchangeRatesModel> get copyWith => __$DailyExchangeRatesModelCopyWithImpl<_DailyExchangeRatesModel>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$DailyExchangeRatesModelToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _DailyExchangeRatesModel&&(identical(other.date, date) || other.date == date)&&(identical(other.base, base) || other.base == base)&&const DeepCollectionEquality().equals(other._rates, _rates));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,date,base,const DeepCollectionEquality().hash(_rates));
 

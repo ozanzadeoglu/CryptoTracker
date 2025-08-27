@@ -21,7 +21,7 @@ class HistoricalExchangeRatesRemoteDataSourceImpl
 
     return _apiClient.get<DailyExchangeRatesModel>(
       path: path,
-      fromJson: (json) => DailyExchangeRatesModel.fromJson(json)
+      fromJson: (json) => DailyExchangeRatesModel.fromJson(json, date)
     );
   }
 
